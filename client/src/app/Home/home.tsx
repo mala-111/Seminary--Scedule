@@ -2,7 +2,7 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from './assets/vite.svg'
 // import heroImg from './assets/hero.png'
-import './Home.css'
+//import './Home.css'
 import logo from '../../assets/react.svg'
 
 function Home() {
@@ -10,7 +10,7 @@ function Home() {
 
   return (
     <>
-      <div id='title'>write</div>
+      <div id="title" className='px-6 bg-[red]'>write</div>
       <img src={logo} alt="" />
       
     </>
