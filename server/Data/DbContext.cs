@@ -16,7 +16,9 @@ class DbContexct:DbContext
             : base(options)
 
             {
-
+                
             }
+
+            
     }
 }
