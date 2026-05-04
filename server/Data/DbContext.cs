@@ -1,8 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
-using Seminary--Scedule.Models;
+using SeminaryScedule.Models;
 
-namespace Seminary--Scedule.Data
+namespace SeminaryScedule.Data
 {
 class DbContexct:DbContext
 {
