@@ -1,8 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
-using MyWebApiProject.Models;
+using Seminary--Scedule.Models;
 
-namespace webapiAAA.Data
+namespace Seminary--Scedule.Data
 {
 class DbContexct:DbContext
 {
