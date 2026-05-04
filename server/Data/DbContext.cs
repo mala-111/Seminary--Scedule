@@ -1,6 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
-using Seminary--Scedule.Models;
+using SeminaryScedule.Models;
 
 namespace Seminary--Scedule.Data
 {
