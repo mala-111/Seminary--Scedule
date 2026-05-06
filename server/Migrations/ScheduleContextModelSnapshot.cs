@@ -22,45 +22,31 @@ namespace MyWebApiProject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClassTeacher", b =>
-                {
-                    b.Property<int>("ClassesClassID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeachersTeacherID")
-                        .HasColumnType("int");
-
-                    b.HasKey("ClassesClassID", "TeachersTeacherID");
-
-                    b.HasIndex("TeachersTeacherID");
-
-                    b.ToTable("ClassTeacher");
-                });
-
             modelBuilder.Entity("MyWebApiProject.Models.Class", b =>
                 {
-                    b.Property<int>("ClassID")
+                    b.Property<Guid>("ClassID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("ClassID");
+
+                    b.HasIndex("TeacherID");
 
                     b.ToTable("Schedule");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>
                 {
-                    b.Property<int>("BookingID")
+                    b.Property<Guid>("BookingID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Day")
                         .IsRequired()
@@ -72,40 +58,39 @@ namespace MyWebApiProject.Migrations
                     b.Property<TimeSpan>("HourStart")
                         .HasColumnType("time");
 
-                    b.Property<int>("TeacherID")
-                        .HasColumnType("int");
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("BookingID");
-
-                    b.HasIndex("TeacherID");
 
                     b.ToTable("EmployeeTypes");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
                 {
-                    b.Property<int>("SubjectID")
+                    b.Property<Guid>("SubjectID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("SubjectID");
+
+                    b.HasIndex("TeacherID");
 
                     b.ToTable("Subject");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Teacher", b =>
                 {
-                    b.Property<int>("TeacherID")
+                    b.Property<Guid>("TeacherID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeacherID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("EmployeeCode")
                         .IsRequired()
@@ -133,65 +118,25 @@ namespace MyWebApiProject.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("SubjectTeacher", b =>
+            modelBuilder.Entity("MyWebApiProject.Models.Class", b =>
                 {
-                    b.Property<int>("SubjectsSubjectID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeachersTeacherID")
-                        .HasColumnType("int");
-
-                    b.HasKey("SubjectsSubjectID", "TeachersTeacherID");
-
-                    b.HasIndex("TeachersTeacherID");
-
-                    b.ToTable("SubjectTeacher");
-                });
-
-            modelBuilder.Entity("ClassTeacher", b =>
-                {
-                    b.HasOne("MyWebApiProject.Models.Class", null)
-                        .WithMany()
-                        .HasForeignKey("ClassesClassID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MyWebApiProject.Models.Teacher", null)
-                        .WithMany()
-                        .HasForeignKey("TeachersTeacherID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Classes")
+                        .HasForeignKey("TeacherID");
                 });
 
-            modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>
+            modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
                 {
-                    b.HasOne("MyWebApiProject.Models.Teacher", "Teacher")
-                        .WithMany("BookedHours")
-                        .HasForeignKey("TeacherID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("SubjectTeacher", b =>
-                {
-                    b.HasOne("MyWebApiProject.Models.Subject", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectsSubjectID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("MyWebApiProject.Models.Teacher", null)
-                        .WithMany()
-                        .HasForeignKey("TeachersTeacherID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Subjects")
+                        .HasForeignKey("TeacherID");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Teacher", b =>
                 {
-                    b.Navigation("BookedHours");
+                    b.Navigation("Classes");
+
+                    b.Navigation("Subjects");
                 });
 #pragma warning restore 612, 618
         }

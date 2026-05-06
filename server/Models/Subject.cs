@@ -4,12 +4,12 @@ namespace MyWebApiProject.Models
 public class Subject
 {
     [Key]  // Primary Key
-    public int SubjectID { get; set; }
+    public Guid SubjectID { get; set; }
 
     [Required]
     public string Name { get; set; }="";
 
     // קשר N:M למורים
-    public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
+    // public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }
 }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyWebApiProject.Models
@@ -6,10 +7,10 @@ namespace MyWebApiProject.Models
 public class HoursBooked
 {
     [Key]  // Primary Key
-    public int BookingID { get; set; }
+    public Guid BookingID { get; set; }
 
     [ForeignKey("Teacher")]  // Foreign Key למורה
-    public int TeacherID { get; set; }
+    public Guid TeacherID { get; set; }
 
     [Required]
     public string Day { get; set; }="";
@@ -20,7 +21,7 @@ public class HoursBooked
     [Required]
     public TimeSpan HourEnd { get; set; }
 
-    public virtual Teacher? Teacher { get; set; }
+    // public virtual Teacher? Teacher { get; set; }
 }
 
 }

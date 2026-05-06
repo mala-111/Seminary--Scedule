@@ -7,7 +7,7 @@ namespace MyWebApiProject.Models
 public class Teacher
 {
     [Key]  // Primary Key
-    public int TeacherID { get; set; }
+    public Guid TeacherID { get; set; }
 
     [Required]
    // [Index(IsUnique = true)]
@@ -21,15 +21,17 @@ public class Teacher
     public bool IsClassTeacher { get; set; }
     public bool IsGroupingTeacher { get; set; }
 
+
+
     // קשרים רבים-לרבים
     public virtual ICollection<Subject> Subjects { get; set; } = new List<Subject>();
     public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
 
     // קשר 1:N
-    public virtual ICollection<HoursBooked> BookedHours { get; set; } = new List<HoursBooked>();
+    // public virtual ICollection<HoursBooked> BookedHours { get; set; } = new List<HoursBooked>();
 
     public Teacher(){
-        
+
     }
 }
 }
