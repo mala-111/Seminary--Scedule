@@ -4,7 +4,7 @@ using SeminaryScedule.Models;
 
 namespace SeminaryScedule.Data
 {
-class DbContexct:DbContext
+class SalesContext:DbContext
 {
    
         public DbSet<Teacher> Teachers { get; set; }
