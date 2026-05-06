@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+namespace MyWebApiProject.Models
+{
 public class Teacher
 {
     [Key]  // Primary Key
     public int TeacherID { get; set; }
 
     [Required]
-    [Index(IsUnique = true)]
-    public string EmployeeCode { get; set; }  // קוד עובד ייחודי
+   // [Index(IsUnique = true)]
+    public string EmployeeCode { get; set; } = "" ; // קוד עובד ייחודי
 
     [Required]
-    public string Name { get; set; }
+    public string Name { get; set; }="";
 
     public int WeeklyHours { get; set; }
-    public string PreferredDayOff { get; set; }
+    public string PreferredDayOff { get; set; }="";
     public bool IsClassTeacher { get; set; }
     public bool IsGroupingTeacher { get; set; }
 
@@ -26,4 +27,9 @@ public class Teacher
 
     // קשר 1:N
     public virtual ICollection<HoursBooked> BookedHours { get; set; } = new List<HoursBooked>();
+
+    public Teacher(){
+        
+    }
+}
 }

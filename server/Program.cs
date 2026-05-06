@@ -1,18 +1,32 @@
-	using Microsoft.OpenApi.Models;
+
 	using Microsoft.EntityFrameworkCore;
-
-	builder.Services.AddDbContext<MyDb>(options =>
-	    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // עדכן כאן
-
-
+    using MyWebApiProject.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+	builder.Services.AddDbContext<ScheduleContext>(options =>
+	    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))); // עדכן כאן
+
+builder.Services.AddControllers();
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// if(app.Environment.IsDevelopment())
+// {
+//     using(var scope = app.Services.CreateScope())
+//     {
+//         var ScheduleContext = scope.ServiceProvider.GetRequiredService<ScheduleContext>();
+//         ScheduleContext.Database.EnsureCreated();
+//         ScheduleContext.Seed();
+//     }
+// }
+app.MapControllers();
+
+app.Run();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

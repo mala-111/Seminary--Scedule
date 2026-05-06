@@ -1,5 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MyWebApiProject.Models
+{
 public class HoursBooked
 {
     [Key]  // Primary Key
@@ -9,7 +12,7 @@ public class HoursBooked
     public int TeacherID { get; set; }
 
     [Required]
-    public string Day { get; set; }
+    public string Day { get; set; }="";
 
     [Required]
     public TimeSpan HourStart { get; set; }
@@ -17,5 +20,7 @@ public class HoursBooked
     [Required]
     public TimeSpan HourEnd { get; set; }
 
-    public virtual Teacher Teacher { get; set; }
+    public virtual Teacher? Teacher { get; set; }
+}
+
 }

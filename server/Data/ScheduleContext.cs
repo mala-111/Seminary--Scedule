@@ -1,18 +1,19 @@
 
 using Microsoft.EntityFrameworkCore;
-using SeminaryScedule.Models;
 
-namespace SeminaryScedule.Data
+
+namespace MyWebApiProject.Data
 {
-class DbContexct:DbContext
+    using Models;
+public class ScheduleContext:DbContext
 {
    
-        public DbSet<Teacher> Employees { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Class> Schedule { get; set; }
 
         public DbSet<HoursBooked> EmployeeTypes { get; set; }
 
-        public DbContexct(DbContextOptions<DbContexct> options)
+        public ScheduleContext(DbContextOptions<ScheduleContext> options)
             : base(options)
 
             {
