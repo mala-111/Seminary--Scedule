@@ -32,14 +32,9 @@ namespace MyWebApiProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TeacherID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("ClassID");
 
-                    b.HasIndex("TeacherID");
-
-                    b.ToTable("Schedule");
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>
@@ -63,7 +58,7 @@ namespace MyWebApiProject.Migrations
 
                     b.HasKey("BookingID");
 
-                    b.ToTable("EmployeeTypes");
+                    b.ToTable("HoursBookeds");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
@@ -76,14 +71,9 @@ namespace MyWebApiProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("TeacherID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("SubjectID");
 
-                    b.HasIndex("TeacherID");
-
-                    b.ToTable("Subject");
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Teacher", b =>
@@ -118,25 +108,24 @@ namespace MyWebApiProject.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("MyWebApiProject.Models.Class", b =>
+            modelBuilder.Entity("MyWebApiProject.Models.TeacherToSubject", b =>
                 {
-                    b.HasOne("MyWebApiProject.Models.Teacher", null)
-                        .WithMany("Classes")
-                        .HasForeignKey("TeacherID");
-                });
+                    b.Property<Guid>("TeacherToSubjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
-                {
-                    b.HasOne("MyWebApiProject.Models.Teacher", null)
-                        .WithMany("Subjects")
-                        .HasForeignKey("TeacherID");
-                });
+                    b.Property<Guid>("ClassID")
+                        .HasColumnType("uniqueidentifier");
 
-            modelBuilder.Entity("MyWebApiProject.Models.Teacher", b =>
-                {
-                    b.Navigation("Classes");
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Navigation("Subjects");
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("TeacherToSubjectId");
+
+                    b.ToTable("TeacherToSubjects");
                 });
 #pragma warning restore 612, 618
         }

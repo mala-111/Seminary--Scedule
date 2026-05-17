@@ -22,10 +22,9 @@ public class Teacher
     public bool IsGroupingTeacher { get; set; }
 
 
-
     // קשרים רבים-לרבים
-    public virtual ICollection<Subject> Subjects { get; set; } = new List<Subject>();
-    public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
+   // public virtual ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+   // public virtual ICollection<Class> Classes { get; set; } = new List<Class>();
 
     // קשר 1:N
     // public virtual ICollection<HoursBooked> BookedHours { get; set; } = new List<HoursBooked>();

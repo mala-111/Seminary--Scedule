@@ -19,5 +19,6 @@ public class TeachersController : ControllerBase
    {
        return Ok(_ScheduleContext.Teachers.OrderBy(t => t.Name).Skip(skip).Take(take));
    }
+   
 }
 }

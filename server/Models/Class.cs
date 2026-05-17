@@ -11,4 +11,8 @@ public class Class
     // קשר N:M למורים
     // public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }
+public class ClassDTO
+    {
+        public string? Name { get; set; }
+    }
 }

@@ -1,0 +1,107 @@
+body {
+  margin: 0;
+  font-family: "Heebo", sans-serif;
+  direction: rtl;
+  background: linear-gradient(135deg, #e2ebf5, #cadff7, #9dc6f5, #6aaaf3);
+  background-size: 1000% 1000%;
+  animation: gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.home-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.glass-card {
+  width: 450px;
+  padding: 50px;
+  border-radius: 25px;
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+  text-align: center;
+  color: #1e293b;
+  position: relative;
+  z-index: 2;
+}
+
+.glass-card h1 {
+  font-size: 44px;
+  margin-bottom: 35px;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group input {
+  width: 80%;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  margin-bottom: 25px;
+  font-size: 16px;
+  background: rgba(255,255,255,0.95);
+  color: #1e293b;
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+}
+
+button {
+  width: 70%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 6px 20px rgba(59,130,246,0.4);
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 10;
+}
+
+.suggestions-list li {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.suggestions-list li:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 12px;
+}

@@ -8,22 +8,25 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c=>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Music API V1");
+        c.RoutePrefix = string.Empty; 
+    });
+}
 
-// if(app.Environment.IsDevelopment())
-// {
-//     using(var scope = app.Services.CreateScope())
-//     {
-//         var ScheduleContext = scope.ServiceProvider.GetRequiredService<ScheduleContext>();
-//         ScheduleContext.Database.EnsureCreated();
-//         ScheduleContext.Seed();
-//     }
-// }
 app.MapControllers();
 
 app.Run();
