@@ -12,7 +12,6 @@ interface FormData {
   saved: boolean;
 }
 
-// מבנה חדש לסניפים עם ימים ושעות
 interface Schedule {
   branch: string;
   hoursByDay: { [day: string]: string[] };
@@ -34,7 +33,7 @@ const Form = () => {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
 
-  // Load main form data and schedules
+  // טעינת נתוני טופס וסניפים
   useEffect(() => {
     const allData = localStorage.getItem(STORAGE_KEY);
     if (allData) {
@@ -45,7 +44,8 @@ const Form = () => {
       }
     }
 
-    const storedSchedules = localStorage.getItem(`schedules_${username}`);
+    // טעינת סניפים לפי שם+סיסמה
+    const storedSchedules = localStorage.getItem(`schedules_${username}_${password}`);
     if (storedSchedules) setSchedules(JSON.parse(storedSchedules));
   }, [username, password]);
 
@@ -54,28 +54,24 @@ const Form = () => {
   };
 
   const handleSave = () => {
-  // אם לא מילאת שעות, לא בחרת האם מחנכת, או שאין סניפים כלל
-  if (!formData.hours || !formData.format || schedules.length === 0) {
-    alert("חובה למלא את כל השדות");
-    return;
-  }
+    if (!formData.hours || !formData.format || schedules.length === 0) {
+      alert("חובה למלא את כל השדות");
+      return;
+    }
 
-  // שמירת נתוני הטופס
-  const allData = localStorage.getItem(STORAGE_KEY);
-  const parsed = allData ? JSON.parse(allData) : {};
-  const key = `${username}_${password}`;
-  parsed[key] = { ...formData, saved: true };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    const allData = localStorage.getItem(STORAGE_KEY);
+    const parsed = allData ? JSON.parse(allData) : {};
+    const key = `${username}_${password}`;
+    parsed[key] = { ...formData, saved: true };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
 
-  // שמירת סניפים ושעות
-  localStorage.setItem(`schedules_${username}`, JSON.stringify(schedules));
+    // שמירה לפי שם + סיסמה
+    localStorage.setItem(`schedules_${username}_${password}`, JSON.stringify(schedules));
 
-  // עדכון מצב השמירה
-  setFormData(prev => ({ ...prev, saved: true }));
+    setFormData(prev => ({ ...prev, saved: true }));
+    alert("הפרטים נשמרו בהצלחה");
+  };
 
-  alert("הפרטים נשמרו בהצלחה");
-};
-  // פונקציה להוספת סניף חדש למערך
   const addSchedule = (branch: string, hoursByDay: { [day: string]: string[] }) => {
     setSchedules(prev => [...prev, { branch, hoursByDay }]);
   };
@@ -131,14 +127,13 @@ const Form = () => {
             מקצועות
           </motion.button>
           <motion.button whileHover={{ scale: 1.06 }} onClick={() => setScheduleOpen(true)} disabled={formData.saved}>
-            הקלדת שעות
+            הקלדת שעות תפוסות
           </motion.button>
           <motion.button whileHover={{ scale: 1.06 }} onClick={handleSave} disabled={formData.saved}>
             שמירת פרטים
           </motion.button>
         </div>
 
-        {/* הצגת כל הסניפים והשעות לפי יום */}
         {schedules.length > 0 && (
           <div style={{ marginTop: "20px" }}>
             {schedules.map((s, idx) => (
@@ -158,12 +153,11 @@ const Form = () => {
       </motion.div>
 
       <ProfessionModal open={professionOpen} onClose={() => setProfessionOpen(false)} />
-
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
         username={username}
-        addSchedule={addSchedule} // מחזיר ל-Form את כל הסניפים והשעונים
+        addSchedule={addSchedule}
       />
     </div>
   );

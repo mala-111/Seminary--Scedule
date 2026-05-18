@@ -47,15 +47,36 @@ namespace MyWebApiProject.Controllers
 
         // DELETE: /manager/home/delete/subject
         // מחיקת מקצוע
-        [HttpDelete("delete/subject/{id}")]
-        public async Task<IActionResult> DeleteSubject(Guid id)
-        {
-            var subject = await _ScheduleContext.Subjects.FindAsync(id);
-            if (subject == null) return NotFound("מקצוע לא נמצא.");
+        // [HttpDelete("delete/subject/{id}")]
+        // public async Task<IActionResult> DeleteSubject(Guid id)
+        // {
+        //     var subject = await _ScheduleContext.Subjects.FindAsync(id);
+        //     if (subject == null) return NotFound("מקצוע לא נמצא.");
 
-            _ScheduleContext.Subjects.Remove(subject);
-            await _ScheduleContext.SaveChangesAsync();
-            return NoContent();
-        }
+        //     _ScheduleContext.Subjects.Remove(subject);
+        //     await _ScheduleContext.SaveChangesAsync();
+        //     return NoContent();
+        // }
+
+
+        [HttpPut("delete/subject/{id}")]
+public async Task<IActionResult> MoveSubjectToHistory(Guid id)
+{
+    var subject = await _ScheduleContext.Subjects.FindAsync(id);
+    if (subject == null) return NotFound();
+
+    var history = new SubjectHistory
+    {
+        SubjectID = subject.SubjectID,
+        Name = subject.Name,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.SubjectsHistory.Add(history);
+    _ScheduleContext.Subjects.Remove(subject);
+
+    await _ScheduleContext.SaveChangesAsync();
+    return Ok(new { message = "Subject moved to history successfully", historyId = history.HistoryId });
+}
     }
 }

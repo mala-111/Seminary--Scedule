@@ -42,5 +42,28 @@ namespace MyWebApiProject.Controllers
                 .Where(h => h.TeacherID == teacherId)
                 .ToListAsync();
         }
+
+        [HttpPut("delete/bookedHours/{id}")]
+public async Task<IActionResult> MoveBookedHoursToHistory(Guid id)
+{
+    var booked = await _ScheduleContext.HoursBooked.FindAsync(id);
+    if (booked == null) return NotFound();
+
+    var history = new HoursBookedHistory
+    {
+        BookingID = booked.BookingID,
+        TeacherID = booked.TeacherID,
+        Day = booked.Day,
+        HourStart = booked.HourStart,
+        HourEnd = booked.HourEnd,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.HoursBookedHistory.Add(history);
+    _ScheduleContext.HoursBooked.Remove(booked);
+
+    await _ScheduleContext.SaveChangesAsync();
+    return Ok(new { message = "Booked hours moved to history successfully", historyId = history.HistoryId });
+}
     }
 }

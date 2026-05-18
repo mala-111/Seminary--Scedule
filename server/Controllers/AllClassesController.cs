@@ -43,15 +43,44 @@ namespace MyWebApiProject.Controllers
 
         // DELETE: /manager/home/delete/class
         // מחיקת כיתה
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteClass(Guid id)
-        {
-            var cls = await _ScheduleContext.AllClasses.FindAsync(id);
-            if (cls == null) return NotFound();
+        // [HttpDelete("delete/{id}")]
+        // public async Task<IActionResult> DeleteClass(Guid id)
+        // {
+        //     var cls = await _ScheduleContext.AllClasses.FindAsync(id);
+        //     if (cls == null) return NotFound();
 
-            _ScheduleContext.AllClasses.Remove(cls);
-            await _ScheduleContext.SaveChangesAsync();
-            return NoContent();
-        }
+        //     _ScheduleContext.AllClasses.Remove(cls);
+        //     await _ScheduleContext.SaveChangesAsync();
+        //     return NoContent();
+        // }
+
+
+
+        // PUT: /manager/home/delete/class
+// העברת כיתה להיסטוריה במקום מחיקה
+[HttpPut("delete/{id}")]
+public async Task<IActionResult> MoveClassToHistory(Guid id)
+{
+    // מציאת הכיתה המקורית
+    var cls = await _ScheduleContext.AllClasses.FindAsync(id);
+    if (cls == null) return NotFound();
+
+    // יצירת רשומה בהיסטוריה
+    var history = new AllClassesHistory
+    {
+        AllClassesID = cls.AllClassesID,
+        ClassName = cls.ClassName,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.AllClassesHistory.Add(history);
+
+    // אם רוצים למחוק מהטבלה המקורית אחרי שמירת ההיסטוריה:
+    _ScheduleContext.AllClasses.Remove(cls);
+
+    await _ScheduleContext.SaveChangesAsync();
+
+    return Ok(new { message = "Class moved to history successfully", historyId = history.HistoryId });
+}
     }
 }

@@ -40,5 +40,28 @@ namespace MyWebApiProject.Controllers
         {
             return await _ScheduleContext.TeacherToSubjects.ToListAsync();
         }
+
+
+        [HttpPut("delete/teacherToSubject/{id}")]
+public async Task<IActionResult> MoveTeacherToSubjectToHistory(Guid id)
+{
+    var entity = await _ScheduleContext.TeacherToSubjects.FindAsync(id);
+    if (entity == null) return NotFound();
+
+    var history = new TeacherToSubjectHistory
+    {
+        TeacherToSubjectId = entity.TeacherToSubjectId,
+        TeacherID = entity.TeacherID,
+        SubjectID = entity.SubjectID,
+        ClassID = entity.ClassID,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.TeacherToSubjectsHistory.Add(history);
+    _ScheduleContext.TeacherToSubjects.Remove(entity);
+
+    await _ScheduleContext.SaveChangesAsync();
+    return Ok(new { message = "TeacherToSubject moved to history successfully", historyId = history.HistoryId });
+}
     }
 }

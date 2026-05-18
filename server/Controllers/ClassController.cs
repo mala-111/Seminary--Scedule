@@ -52,19 +52,39 @@ namespace MyWebApiProject.Controllers
 
         // DELETE: /manager/home/delete/class
         // מחיקת כיתה
-        [HttpDelete("delete/class/{id}")]
-        public async Task<IActionResult> DeleteClass(Guid id)
-        {
-            var classEntity = await _ScheduleContext.Classes.FindAsync(id);
-            if (classEntity == null)
-            {
-                return NotFound("כיתה לא נמצאה.");
-            }
+        // [HttpDelete("delete/class/{id}")]
+        // public async Task<IActionResult> DeleteClass(Guid id)
+        // {
+        //     var classEntity = await _ScheduleContext.Classes.FindAsync(id);
+        //     if (classEntity == null)
+        //     {
+        //         return NotFound("כיתה לא נמצאה.");
+        //     }
 
-            _ScheduleContext.Classes.Remove(classEntity);
-            await _ScheduleContext.SaveChangesAsync();
+        //     _ScheduleContext.Classes.Remove(classEntity);
+        //     await _ScheduleContext.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //     return NoContent();
+        // }
+
+        [HttpPut("delete/class/{id}")]
+public async Task<IActionResult> MoveClassToHistory(Guid id)
+{
+    var classEntity = await _ScheduleContext.Classes.FindAsync(id);
+    if (classEntity == null) return NotFound();
+
+    var history = new ClassHistory
+    {
+        ClassID = classEntity.ClassID,
+        Name = classEntity.Name,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.ClassesHistory.Add(history);
+    _ScheduleContext.Classes.Remove(classEntity);
+
+    await _ScheduleContext.SaveChangesAsync();
+    return Ok(new { message = "Class moved to history successfully", historyId = history.HistoryId });
+}
     }
 }

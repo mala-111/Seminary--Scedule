@@ -53,12 +53,37 @@ namespace MyWebApiProject.Controllers
 
         // DELETE: /manager/home/resetSchedule
         // איפוס המערכת
-        [HttpDelete("resetSchedule")]
-        public async Task<IActionResult> ResetSchedule()
+        // [HttpDelete("resetSchedule")]
+        // public async Task<IActionResult> ResetSchedule()
+        // {
+        //     _ScheduleContext.Schedules.RemoveRange(_ScheduleContext.Schedules);
+        //     await _ScheduleContext.SaveChangesAsync();
+        //     return NoContent();
+        // }
+
+        [HttpPut("resetSchedule")]
+public async Task<IActionResult> MoveSchedulesToHistory()
+{
+    var schedules = await _ScheduleContext.Schedules.ToListAsync();
+    foreach(var s in schedules)
+    {
+        var history = new ScheduleHistory
         {
-            _ScheduleContext.Schedules.RemoveRange(_ScheduleContext.Schedules);
-            await _ScheduleContext.SaveChangesAsync();
-            return NoContent();
-        }
+            ScheduleId = s.ScheduleId,
+            TeacherID = s.TeacherID,
+            SubjectID = s.SubjectID,
+            AllClassesID = s.AllClassesID,
+            Day = s.Day,
+            Hour = s.Hour,
+            UpdateHistory = DateTime.UtcNow
+        };
+        _ScheduleContext.SchedulesHistory.Add(history);
+    }
+
+    _ScheduleContext.Schedules.RemoveRange(schedules);
+    await _ScheduleContext.SaveChangesAsync();
+
+    return Ok(new { message = "All schedules moved to history successfully" });
+}
     }
 }

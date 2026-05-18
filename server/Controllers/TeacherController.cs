@@ -76,15 +76,40 @@ namespace MyWebApiProject.Controllers
 
         // DELETE: /manager/home/delete/user
         // מחיקת מורה
-        [HttpDelete("delete/user/{id}")]
-        public async Task<IActionResult> DeleteTeacher(Guid id)
-        {
-            var teacher = await _ScheduleContext.Teachers.FindAsync(id);
-            if (teacher == null) return NotFound("מורה לא נמצא.");
+        // [HttpDelete("delete/user/{id}")]
+        // public async Task<IActionResult> DeleteTeacher(Guid id)
+        // {
+        //     var teacher = await _ScheduleContext.Teachers.FindAsync(id);
+        //     if (teacher == null) return NotFound("מורה לא נמצא.");
 
-            _ScheduleContext.Teachers.Remove(teacher);
-            await _ScheduleContext.SaveChangesAsync();
-            return NoContent();
-        }
+        //     _ScheduleContext.Teachers.Remove(teacher);
+        //     await _ScheduleContext.SaveChangesAsync();
+        //     return NoContent();
+        // }
+
+        [HttpPut("delete/user/{id}")]
+public async Task<IActionResult> MoveTeacherToHistory(Guid id)
+{
+    var teacher = await _ScheduleContext.Teachers.FindAsync(id);
+    if (teacher == null) return NotFound();
+
+    var history = new TeacherHistory
+    {
+        TeacherID = teacher.TeacherID,
+        Name = teacher.Name,
+        EmployeeCode = teacher.EmployeeCode,
+        WeeklyHours = teacher.WeeklyHours,
+        PreferredDayOff = teacher.PreferredDayOff,
+        IsClassTeacher = teacher.IsClassTeacher,
+        IsGroupingTeacher = teacher.IsGroupingTeacher,
+        UpdateHistory = DateTime.UtcNow
+    };
+
+    _ScheduleContext.TeachersHistory.Add(history);
+    _ScheduleContext.Teachers.Remove(teacher);
+
+    await _ScheduleContext.SaveChangesAsync();
+    return Ok(new { message = "Teacher moved to history successfully", historyId = history.HistoryId });
+}
     }
 }
