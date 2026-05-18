@@ -1,0 +1,40 @@
+/* אותו סגנון כמו SacredProfessions.css */
+.modal-overlay {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: rgba(0,0,0,0.5);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+
+.modal-box {
+  background:#fff;
+  border-radius:10px;
+  padding:20px;
+  width:400px;
+  max-width:90%;
+}
+
+.profession-list {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:20px 0;
+}
+
+.profession-list button {
+  padding:10px;
+  border-radius:5px;
+  border:1px solid #333;
+  background:#eee;
+  cursor:pointer;
+}
+
+.profession-list button:hover {
+  background:#ddd;
+}

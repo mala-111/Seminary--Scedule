@@ -10,6 +10,7 @@ interface FormData {
   branch: string;
   format: string;
   saved: boolean;
+  professions?: { [profession: string]: string[] }; // מקצועות + מחזורים
 }
 
 interface Schedule {
@@ -28,12 +29,12 @@ const Form = () => {
     branch: "",
     format: "",
     saved: false,
+    professions: {},
   });
   const [professionOpen, setProfessionOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
 
-  // טעינת נתוני טופס וסניפים
   useEffect(() => {
     const allData = localStorage.getItem(STORAGE_KEY);
     if (allData) {
@@ -44,7 +45,6 @@ const Form = () => {
       }
     }
 
-    // טעינת סניפים לפי שם+סיסמה
     const storedSchedules = localStorage.getItem(`schedules_${username}_${password}`);
     if (storedSchedules) setSchedules(JSON.parse(storedSchedules));
   }, [username, password]);
@@ -65,15 +65,21 @@ const Form = () => {
     parsed[key] = { ...formData, saved: true };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
 
-    // שמירה לפי שם + סיסמה
     localStorage.setItem(`schedules_${username}_${password}`, JSON.stringify(schedules));
-
     setFormData(prev => ({ ...prev, saved: true }));
     alert("הפרטים נשמרו בהצלחה");
   };
 
   const addSchedule = (branch: string, hoursByDay: { [day: string]: string[] }) => {
     setSchedules(prev => [...prev, { branch, hoursByDay }]);
+  };
+
+  // פונקציה לשמירת מקצוע ומחזורים
+  const handleSaveProfession = (profession: string, cycles: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      professions: { ...prev.professions, [profession]: cycles },
+    }));
   };
 
   return (
@@ -134,6 +140,17 @@ const Form = () => {
           </motion.button>
         </div>
 
+        {/* הצגת מקצועות ומחזורים מתחת לכפתור מקצועות */}
+        {formData.professions && Object.keys(formData.professions).length > 0 && (
+          <div className="saved-professions">
+            {Object.entries(formData.professions).map(([p, cycles]) => (
+              <div key={p}>
+                <strong>{p}:</strong> {cycles.join(", ")}
+              </div>
+            ))}
+          </div>
+        )}
+
         {schedules.length > 0 && (
           <div style={{ marginTop: "20px" }}>
             {schedules.map((s, idx) => (
@@ -152,7 +169,11 @@ const Form = () => {
         )}
       </motion.div>
 
-      <ProfessionModal open={professionOpen} onClose={() => setProfessionOpen(false)} />
+      <ProfessionModal
+        open={professionOpen}
+        onClose={() => setProfessionOpen(false)}
+        onSaveProfession={handleSaveProfession} // כאן שולחים את הנתונים
+      />
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}

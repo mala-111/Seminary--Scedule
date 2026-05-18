@@ -1,12 +1,19 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./ProfessionModal.css";
+import SacredProfessions from "./SacredProfessions";
+import SandProfessions from "./SandProfessions";
+import GroupsProfessions from "./GroupsProfessions";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  onSaveProfession: (profession: string, cycles: string[]) => void;
 }
 
-const ProfessionModal = ({ open, onClose }: Props) => {
+const ProfessionModal = ({ open, onClose, onSaveProfession }: Props) => {
+  const [activeCategory, setActiveCategory] = useState<"sacred" | "sand" | "groups" | null>(null);
+
   return (
     <AnimatePresence>
       {open && (
@@ -22,16 +29,32 @@ const ProfessionModal = ({ open, onClose }: Props) => {
             animate={{ scale: 1 }}
             exit={{ scale: 0.7 }}
           >
-            <h2>בחירת מקצועות</h2>
-            <div className="profession-list">
-              <button>מתמטיקה</button>
-              <button>אנגלית</button>
-              <button>היסטוריה</button>
-              <button>מדעים</button>
-            </div>
-            <button onClick={onClose}>
-              חזרה
-            </button>
+            {!activeCategory ? (
+              <>
+                <h2>בחירת מקצועות</h2>
+                <div className="profession-list">
+                  <button onClick={() => setActiveCategory("sacred")}>מקצועות קודש</button>
+                  <button onClick={() => setActiveCategory("sand")}>מקצועות חול</button>
+                  <button onClick={() => setActiveCategory("groups")}>הקבצות</button>
+                </div>
+                <button onClick={onClose}>חזרה</button>
+              </>
+            ) : activeCategory === "sacred" ? (
+              <SacredProfessions
+                onClose={() => setActiveCategory(null)}
+                onSave={(p, c) => onSaveProfession(p, c)}
+              />
+            ) : activeCategory === "sand" ? (
+              <SandProfessions
+                onClose={() => setActiveCategory(null)}
+                onSave={(p, c) => onSaveProfession(p, c)}
+              />
+            ) : (
+              <GroupsProfessions
+                onClose={() => setActiveCategory(null)}
+                onSave={(p, c) => onSaveProfession(p, c)}
+              />
+            )}
           </motion.div>
         </motion.div>
       )}
