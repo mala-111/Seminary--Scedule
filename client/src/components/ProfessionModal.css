@@ -41,3 +41,19 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+.search-input {
+  width: 100%;              /* תופס את רוחב התיבה */
+  max-width: 250px;         /* רוחב מקסימלי כדי שלא יהיה גדול מדי */
+  padding: 6px 10px;        /* פדינג קטן ונוח */
+  font-size: 14px;          /* גודל גופן יותר מותאם */
+  border: 1px solid #ccc;   /* גבול עדין */
+  border-radius: 20px;      /* צורה מעוגלת כמו "pill" */
+  outline: none;
+  transition: 0.2s;
+}
+
+.search-input:focus {
+  border-color: #4a90e2;   /* צבע גבול בעת פוקוס */
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}

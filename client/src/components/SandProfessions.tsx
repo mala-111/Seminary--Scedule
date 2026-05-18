@@ -34,6 +34,11 @@ const sandList = [
 
 const SandProfessions = ({ onClose, onSave }: Props) => {
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+
+  const filteredList = sandList.filter(p =>
+    p.toLowerCase().includes(search.trim().toLowerCase())
+  );
 
   return (
     <div className="modal-overlay">
@@ -41,23 +46,33 @@ const SandProfessions = ({ onClose, onSave }: Props) => {
         {!selectedProfession ? (
           <>
             <h2>מקצועות חול</h2>
+            <input
+              type="text"
+              placeholder="הקלד מקצוע לחיפוש..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+              autoFocus
+            />
             <div className="profession-list">
-              {sandList.map(p => (
+              {search && filteredList.map(p => (
                 <button key={p} onClick={() => setSelectedProfession(p)}>
                   {p}
                 </button>
               ))}
+              {search && filteredList.length === 0 && <p className="no-results">לא נמצאו מקצועות</p>}
             </div>
-            <button onClick={onClose}>חזרה</button>
+            <button onClick={onClose} className="close-btn">חזרה</button>
           </>
         ) : (
           <GroupMarking
             profession={selectedProfession}
             onConfirm={(cycles) => {
               onSave(selectedProfession, cycles);
-              setSelectedProfession(null); // חזרה לרשימת מקצועות
+              setSelectedProfession(null);
+              setSearch(""); // איפוס החיפוש לאחר בחירה
             }}
-            onCancel={() => setSelectedProfession(null)} // חזרה לרשימת מקצועות
+            onCancel={() => setSelectedProfession(null)}
           />
         )}
       </div>
