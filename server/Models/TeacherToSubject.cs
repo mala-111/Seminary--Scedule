@@ -15,7 +15,10 @@ namespace MyWebApiProject.Models
         public Guid SubjectID { get; set; }
 
         [ForeignKey("Class")]
+
         public Guid ClassID { get; set; }
+
+        // public Teacher teacher {get; set;}
 
     }
 }

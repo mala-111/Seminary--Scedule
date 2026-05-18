@@ -23,5 +23,11 @@ public class HoursBooked
 
     // public virtual Teacher? Teacher { get; set; }
 }
+public class HoursBookedDTO
+    {
+      public string Day { get; set; }="";
+      public TimeSpan HourStart { get; set; }
+      public TimeSpan HourEnd { get; set; }
 
-}
+    }
+    }

@@ -22,6 +22,42 @@ namespace MyWebApiProject.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MyWebApiProject.Models.AllClasses", b =>
+                {
+                    b.Property<Guid>("AllClassesID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AllClassesID");
+
+                    b.ToTable("AllClasses");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.AllClassesHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("AllClassesHistory");
+                });
+
             modelBuilder.Entity("MyWebApiProject.Models.Class", b =>
                 {
                     b.Property<Guid>("ClassID")
@@ -35,6 +71,27 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("ClassID");
 
                     b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.ClassHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClassID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("ClassesHistory");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>
@@ -58,7 +115,103 @@ namespace MyWebApiProject.Migrations
 
                     b.HasKey("BookingID");
 
-                    b.ToTable("HoursBookeds");
+                    b.ToTable("HoursBooked");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.HoursBookedHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookingID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Day")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("HourEnd")
+                        .HasColumnType("time");
+
+                    b.Property<TimeSpan>("HourStart")
+                        .HasColumnType("time");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("HoursBookedHistory");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.Schedule", b =>
+                {
+                    b.Property<Guid>("ScheduleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Day")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Hour")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubjectDTOay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ScheduleId");
+
+                    b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.ScheduleHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Day")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Hour")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ScheduleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("SchedulesHistory");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
@@ -74,6 +227,27 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("SubjectID");
 
                     b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.SubjectHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("SubjectsHistory");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Teacher", b =>
@@ -108,6 +282,44 @@ namespace MyWebApiProject.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("MyWebApiProject.Models.TeacherHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsClassTeacher")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsGroupingTeacher")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PreferredDayOff")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("WeeklyHours")
+                        .HasColumnType("int");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("TeachersHistory");
+                });
+
             modelBuilder.Entity("MyWebApiProject.Models.TeacherToSubject", b =>
                 {
                     b.Property<Guid>("TeacherToSubjectId")
@@ -126,6 +338,32 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("TeacherToSubjectId");
 
                     b.ToTable("TeacherToSubjects");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.TeacherToSubjectHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClassID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherToSubjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("TeacherToSubjectsHistory");
                 });
 #pragma warning restore 612, 618
         }

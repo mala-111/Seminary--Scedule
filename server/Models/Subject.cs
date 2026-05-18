@@ -12,4 +12,11 @@ public class Subject
     // קשר N:M למורים
     // public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }
+
+public class SubjectDTO
+    {
+     public string Name { get; set; }="";
+
+
+    }
 }

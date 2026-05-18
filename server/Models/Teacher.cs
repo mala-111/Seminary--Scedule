@@ -33,4 +33,18 @@ public class Teacher
 
     }
 }
+
+public class TeacherDTO
+    {
+     public string EmployeeCode { get; set; } = "" ; // קוד עובד ייחודי
+
+    
+    public string Name { get; set; }="";
+
+    public int WeeklyHours { get; set; }
+    public string PreferredDayOff { get; set; }="";
+    public bool IsClassTeacher { get; set; }
+    public bool IsGroupingTeacher { get; set; }
+
+    }
 }
