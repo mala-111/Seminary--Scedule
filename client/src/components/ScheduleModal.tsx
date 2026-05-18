@@ -1,37 +1,50 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import "./ScheduleModal.css";
-
-
-
 
 interface ScheduleModalProps {
   open: boolean;
   onClose: () => void;
   username: string;
-  addSchedule: (branch: string, hours: string[]) => void;
+  addSchedule: (branch: string, hoursByDay: { [day: string]: string[] }) => void;
 }
+
+const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
+const hoursList = Array.from({ length: 8 }, (_, i) => `${8 + i}:00`);
 
 const ScheduleModal = ({ open, onClose, username, addSchedule }: ScheduleModalProps) => {
   const [branch, setBranch] = useState("");
-  const [selectedHours, setSelectedHours] = useState<string[]>([]);
+  const [hoursByDay, setHoursByDay] = useState<{ [day: string]: string[] }>({});
 
-  const hoursOptions = Array.from({ length: 25 }, (_, i) => `${i + 6}:00`); // 6:00-30:00
-
-  const toggleHour = (hour: string) => {
-    setSelectedHours(prev =>
-      prev.includes(hour) ? prev.filter(h => h !== hour) : [...prev, hour]
-    );
+  // Toggle שעה
+  const toggleHour = (day: string, hour: string) => {
+    setHoursByDay(prev => {
+      const dayHours = prev[day] || [];
+      if (dayHours.includes(hour)) {
+        return { ...prev, [day]: dayHours.filter(h => h !== hour) };
+      } else {
+        return { ...prev, [day]: [...dayHours, hour] };
+      }
+    });
   };
 
   const handleAddBranch = () => {
-    if (!branch || selectedHours.length === 0) {
-      alert("יש למלא סניף ולסמן לפחות שעה אחת");
+    if (!branch) {
+      alert("חובה להזין שם סניף");
       return;
     }
-    addSchedule(branch, selectedHours);
+    addSchedule(branch, hoursByDay);
     setBranch("");
-    setSelectedHours([]);
+    setHoursByDay({});
+  };
+
+  const handleClose = () => {
+    // שמירה של הסניף האחרון אם יש שם סניף ושעות
+    if (branch && Object.keys(hoursByDay).length > 0) {
+      addSchedule(branch, hoursByDay);
+    }
+    setBranch("");
+    setHoursByDay({});
+    onClose();
   };
 
   if (!open) return null;
@@ -40,38 +53,43 @@ const ScheduleModal = ({ open, onClose, username, addSchedule }: ScheduleModalPr
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-field">
-          <label>שם סניף</label>
+          <label>סניף</label>
           <input
             type="text"
-            placeholder="הקלד שם סניף"
             value={branch}
             onChange={e => setBranch(e.target.value)}
+            placeholder="הזן שם סניף"
           />
         </div>
 
         <table className="schedule-table">
           <thead>
             <tr>
-              <th>שעות</th>
+              <th>שעה \ יום</th>
+              {days.map(day => (
+                <th key={day}>{day}</th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {hoursOptions.map(hour => (
+            {hoursList.map(hour => (
               <tr key={hour}>
-                <td
-                  className={selectedHours.includes(hour) ? "selected" : ""}
-                  onClick={() => toggleHour(hour)}
-                >
-                  {hour}
-                </td>
+                <td>{hour}</td>
+                {days.map(day => (
+                  <td
+                    key={day}
+                    className={hoursByDay[day]?.includes(hour) ? "selected" : ""}
+                    onClick={() => toggleHour(day, hour)}
+                  ></td>
+                ))}
               </tr>
             ))}
           </tbody>
         </table>
 
         <div className="modal-buttons">
-          <button onClick={handleAddBranch}>הוסף סניף</button>
-          <button onClick={onClose}>סגור</button>
+          <button onClick={handleAddBranch}>הוספת סניף</button>
+          <button onClick={handleClose}>סגור</button>
         </div>
       </div>
     </div>

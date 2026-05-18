@@ -12,6 +12,12 @@ interface FormData {
   saved: boolean;
 }
 
+// מבנה חדש לסניפים עם ימים ושעות
+interface Schedule {
+  branch: string;
+  hoursByDay: { [day: string]: string[] };
+}
+
 const STORAGE_KEY = "saved_user_data";
 
 const Form = () => {
@@ -26,7 +32,7 @@ const Form = () => {
   });
   const [professionOpen, setProfessionOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
-  const [schedules, setSchedules] = useState<{ branch: string; hours: string[] }[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
 
   // Load main form data and schedules
   useEffect(() => {
@@ -67,8 +73,8 @@ const Form = () => {
   };
 
   // פונקציה להוספת סניף חדש למערך
-  const addSchedule = (branch: string, hours: string[]) => {
-    setSchedules(prev => [...prev, { branch, hours }]);
+  const addSchedule = (branch: string, hoursByDay: { [day: string]: string[] }) => {
+    setSchedules(prev => [...prev, { branch, hoursByDay }]);
   };
 
   return (
@@ -129,12 +135,19 @@ const Form = () => {
           </motion.button>
         </div>
 
-        {/* הצגת כל הסניפים והשעות */}
+        {/* הצגת כל הסניפים והשעות לפי יום */}
         {schedules.length > 0 && (
           <div style={{ marginTop: "20px" }}>
             {schedules.map((s, idx) => (
-              <div key={idx}>
-                <strong>סניף: {s.branch}</strong> - שעות תפוסות: {s.hours.join(", ")}
+              <div key={idx} style={{ marginBottom: "15px" }}>
+                <strong>סניף: {s.branch}</strong>
+                <div>
+                  {Object.entries(s.hoursByDay).map(([day, hours]) => (
+                    <div key={day}>
+                      יום {day}: {hours.join(", ")}
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -146,8 +159,8 @@ const Form = () => {
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
-        username={username}          // נותן ל-Modal לדעת למי לשמור
-        addSchedule={addSchedule}    // מחזיר ל-Form את הסניפים והשעונים
+        username={username}
+        addSchedule={addSchedule} // מחזיר ל-Form את כל הסניפים והשעונים
       />
     </div>
   );
