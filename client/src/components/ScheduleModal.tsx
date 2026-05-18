@@ -1,44 +1,31 @@
-import { useState, useEffect } from "react";
+// ScheduleModal.tsx
+import { useState } from "react";
 import { motion } from "framer-motion";
 import "./ScheduleModal.css";
-import BranchForm from './BranchForm';
-
-function ScheduleModelPage() {
-  return (
-    <div>
-      <h1>דף לוח זמנים</h1>
-      <BranchForm />
-    </div>
-  );
-}
 
 interface ScheduleModalProps {
   open: boolean;
   onClose: () => void;
-  branch?: string;
-  onSave: (branch: string, hours: string[]) => void;
+  username: string;
+  setSchedules: React.Dispatch<React.SetStateAction<{ branch: string; hours: string[] }[]>>;
 }
 
-const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
-const hours = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"];
+const ScheduleModal = ({ open, onClose, username, setSchedules }: ScheduleModalProps) => {
+  const [branch, setBranch] = useState("");
+  const [hours, setHours] = useState<string>("");
 
-const ScheduleModal = ({ open, onClose, branch, onSave }: ScheduleModalProps) => {
-  const [selectedCells, setSelectedCells] = useState<{ [key: string]: boolean }>({});
+  const handleAdd = () => {
+    if (!branch || !hours) {
+      alert("חובה למלא סניף ושעות");
+      return;
+    }
 
-  useEffect(() => {
-    if (!open) setSelectedCells({});
-  }, [open]);
-
-  const toggleCell = (day: string, hour: string) => {
-    const key = `${day}_${hour}`;
-    setSelectedCells(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleSave = () => {
-    if (!branch) return;
-    const selectedHours = Object.keys(selectedCells).filter(k => selectedCells[k]);
-    onSave(branch, selectedHours);
-    onClose();
+    const hoursArray = hours.split(",").map(h => h.trim());
+    setSchedules(prev => [...prev, { branch, hours: hoursArray }]);
+    
+    // Reset inputs
+    setBranch("");
+    setHours("");
   };
 
   if (!open) return null;
@@ -47,38 +34,26 @@ const ScheduleModal = ({ open, onClose, branch, onSave }: ScheduleModalProps) =>
     <div className="modal-overlay">
       <motion.div
         className="modal-content"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
       >
-        <h2>הקלדת שעות תפוסות - {branch}</h2>
-        <table className="schedule-table">
-          <thead>
-            <tr>
-              <th>שעה / יום</th>
-              {days.map(day => <th key={day}>{day}</th>)}
-            </tr>
-          </thead>
-          <tbody>
-            {hours.map(hour => (
-              <tr key={hour}>
-                <td>{hour}</td>
-                {days.map(day => {
-                  const key = `${day}_${hour}`;
-                  return (
-                    <td
-                      key={key}
-                      className={selectedCells[key] ? "selected" : ""}
-                      onClick={() => toggleCell(day, hour)}
-                    />
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="modal-actions">
-          <button onClick={onClose}>חזרה</button>
-          <button onClick={handleSave}>שמירה</button>
+        <h2>הקלדת שעות לסניף</h2>
+        <div className="modal-field">
+          <label>סניף:</label>
+          <input value={branch} onChange={e => setBranch(e.target.value)} />
+        </div>
+        <div className="modal-field">
+          <label>שעות (מופרדות בפסיקים):</label>
+          <input value={hours} onChange={e => setHours(e.target.value)} placeholder="לדוגמה: 08:00, 09:00, 10:00" />
+        </div>
+        <div className="modal-buttons">
+          <motion.button whileHover={{ scale: 1.05 }} onClick={handleAdd}>
+            הוסף
+          </motion.button>
+          <motion.button whileHover={{ scale: 1.05 }} onClick={onClose}>
+            סגור
+          </motion.button>
         </div>
       </motion.div>
     </div>

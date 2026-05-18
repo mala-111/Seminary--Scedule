@@ -8,73 +8,47 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1000;
 }
 
 .modal-content {
   background: white;
   padding: 30px;
   border-radius: 20px;
-  width: 80%;
-  max-width: 800px;
+  width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
-.branch-input {
-  margin-bottom: 20px;
+.modal-field {
   display: flex;
   flex-direction: column;
+  margin-bottom: 20px;
 }
 
-.branch-input label {
-  font-weight: bold;
+.modal-field label {
   margin-bottom: 8px;
-}
-
-.branch-input input {
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-}
-
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-.schedule-table th,
-.schedule-table td {
-  border: 1px solid #ccc;
-  padding: 10px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.selected-cell {
-  background-color: #3b82f6;
-  color: white;
   font-weight: bold;
+}
+
+.modal-field input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }
 
 .modal-buttons {
   display: flex;
+  gap: 15px;
   justify-content: flex-end;
-  gap: 20px;
-  margin-top: 20px;
 }
 
 .modal-buttons button {
   padding: 10px 20px;
   border-radius: 12px;
   border: none;
-  background: #3b82f6;
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.2s;
-}
-
-.modal-buttons button:hover {
-  background: #2563eb;
 }

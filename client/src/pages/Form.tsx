@@ -24,11 +24,11 @@ const Form = () => {
     format: "",
     saved: false,
   });
-
   const [professionOpen, setProfessionOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [schedules, setSchedules] = useState<{ branch: string; hours: string[] }[]>([]);
 
+  // Load main form data
   useEffect(() => {
     const allData = localStorage.getItem(STORAGE_KEY);
     if (allData) {
@@ -38,6 +38,10 @@ const Form = () => {
         setFormData({ ...parsed[key], saved: true });
       }
     }
+
+    // Load schedules
+    const storedSchedules = localStorage.getItem(`schedules_${username}`);
+    if (storedSchedules) setSchedules(JSON.parse(storedSchedules));
   }, [username, password]);
 
   const handleChange = (field: keyof FormData, value: string) => {
@@ -49,12 +53,17 @@ const Form = () => {
       alert("חובה למלא את כל השדות");
       return;
     }
+
     const allData = localStorage.getItem(STORAGE_KEY);
     const parsed = allData ? JSON.parse(allData) : {};
     const key = `${username}_${password}`;
     parsed[key] = { ...formData, saved: true };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
     setFormData(prev => ({ ...prev, saved: true }));
+
+    // Save schedules too
+    localStorage.setItem(`schedules_${username}`, JSON.stringify(schedules));
+
     alert("הפרטים נשמרו בהצלחה");
   };
 
@@ -100,36 +109,23 @@ const Form = () => {
                 לא
               </button>
             </div>
-            {formData.format && (
-              <span className="selection-text-inline">{formData.format}</span>
-            )}
+            {formData.format && <span className="selection-text-inline">{formData.format}</span>}
           </div>
         </div>
+
         <div className="action-buttons">
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            onClick={() => setProfessionOpen(true)}
-            disabled={formData.saved}
-          >
+          <motion.button whileHover={{ scale: 1.06 }} onClick={() => setProfessionOpen(true)} disabled={formData.saved}>
             מקצועות
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            onClick={() => setScheduleOpen(true)}
-            disabled={formData.saved}
-          >
+          <motion.button whileHover={{ scale: 1.06 }} onClick={() => setScheduleOpen(true)} disabled={formData.saved}>
             הקלדת שעות
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.06 }}
-            onClick={handleSave}
-            disabled={formData.saved}
-          >
+          <motion.button whileHover={{ scale: 1.06 }} onClick={handleSave} disabled={formData.saved}>
             שמירת פרטים
           </motion.button>
         </div>
 
-        {/* הצגת כל הסניפים והשעונים שנבחרו */}
+        {/* הצגת כל הסניפים והשעות */}
         {schedules.length > 0 && (
           <div style={{ marginTop: "20px" }}>
             {schedules.map((s, idx) => (
@@ -142,11 +138,12 @@ const Form = () => {
       </motion.div>
 
       <ProfessionModal open={professionOpen} onClose={() => setProfessionOpen(false)} />
+
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
-        branch="" // אין צורך כאן, המשתמש יקיש שם סניף בתוך ה-Modal
-        setSchedules={setSchedules} // מחזיר ל-Form את כל הסניפים והשעונים
+        username={username}          // נותן ל-Modal לדעת למי לשמור
+        setSchedules={setSchedules}  // מחזיר ל-Form את כל הסניפים והשעונים
       />
     </div>
   );
