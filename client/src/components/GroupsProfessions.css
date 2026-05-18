@@ -33,8 +33,10 @@
   border:1px solid #333;
   background:#eee;
   cursor:pointer;
+  color: rgb(88, 87, 87);
 }
 
 .profession-list button:hover {
   background:#ddd;
+  color: black;
 }

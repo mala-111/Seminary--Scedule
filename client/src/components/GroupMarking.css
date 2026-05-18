@@ -32,17 +32,25 @@
   border: 1px solid #333;
   background: #eee;
   cursor: pointer;
+  color: rgb(88, 87, 87);
+}
+
+.cycle-buttons button:hover {
+  background:#ddd;
+  color: black;
 }
 
 .cycle-buttons button.active {
   background: #007bff;
   color: white;
+  
 }
 
 .action-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+  
 }
 
 .action-buttons button {
@@ -50,8 +58,10 @@
   border-radius: 5px;
   border: none;
   cursor: pointer;
+  
 }
 
 .action-buttons button:hover {
   opacity: 0.9;
+  
 }

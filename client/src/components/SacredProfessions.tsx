@@ -22,7 +22,8 @@ const sacredList = [
   "מוסר",
   "חגים ומועדים",
   "לישרים תהילה",
-  "ספר החינוך"
+  "ספר החינוך",
+  "נביא"
 ];
 
 const SacredProfessions = ({ onClose, onSave }: Props) => {
