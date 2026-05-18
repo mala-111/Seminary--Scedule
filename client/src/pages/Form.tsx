@@ -28,7 +28,7 @@ const Form = () => {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [schedules, setSchedules] = useState<{ branch: string; hours: string[] }[]>([]);
 
-  // Load main form data
+  // Load main form data and schedules
   useEffect(() => {
     const allData = localStorage.getItem(STORAGE_KEY);
     if (allData) {
@@ -39,7 +39,6 @@ const Form = () => {
       }
     }
 
-    // Load schedules
     const storedSchedules = localStorage.getItem(`schedules_${username}`);
     if (storedSchedules) setSchedules(JSON.parse(storedSchedules));
   }, [username, password]);
@@ -65,6 +64,11 @@ const Form = () => {
     localStorage.setItem(`schedules_${username}`, JSON.stringify(schedules));
 
     alert("הפרטים נשמרו בהצלחה");
+  };
+
+  // פונקציה להוספת סניף חדש למערך
+  const addSchedule = (branch: string, hours: string[]) => {
+    setSchedules(prev => [...prev, { branch, hours }]);
   };
 
   return (
@@ -143,7 +147,7 @@ const Form = () => {
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
         username={username}          // נותן ל-Modal לדעת למי לשמור
-        setSchedules={setSchedules}  // מחזיר ל-Form את כל הסניפים והשעונים
+        addSchedule={addSchedule}    // מחזיר ל-Form את הסניפים והשעונים
       />
     </div>
   );
