@@ -6,7 +6,7 @@ namespace MyWebApiProject.Models
 {
     public class TeacherToSubject{
         [Key]
-         public Guid TeacherToSubjectId {get; set;}
+         public Guid TeacherToSubjectId {get; set;}=Guid.NewGuid();
 
         [ForeignKey("Teacher")]
         public Guid TeacherID { get; set; }

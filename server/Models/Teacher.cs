@@ -7,7 +7,7 @@ namespace MyWebApiProject.Models
 public class Teacher
 {
     [Key]  // Primary Key
-    public Guid TeacherID { get; set; }
+    public Guid TeacherID { get; set; }=Guid.NewGuid();
 
     [Required]
    // [Index(IsUnique = true)]

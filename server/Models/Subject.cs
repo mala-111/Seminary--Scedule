@@ -4,7 +4,7 @@ namespace MyWebApiProject.Models
 public class Subject
 {
     [Key]  // Primary Key
-    public Guid SubjectID { get; set; }
+    public Guid SubjectID { get; set; }=Guid.NewGuid();
 
     [Required]
     public string Name { get; set; }="";

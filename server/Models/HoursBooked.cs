@@ -7,7 +7,7 @@ namespace MyWebApiProject.Models
 public class HoursBooked
 {
     [Key]// Primary Key
-    public Guid BookingID { get; set; }
+    public Guid BookingID { get; set; }=Guid.NewGuid();
 
     [ForeignKey("Teacher")]  // Foreign Key למורה
     public Guid TeacherID { get; set; }

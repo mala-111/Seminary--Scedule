@@ -54,24 +54,27 @@ const Form = () => {
   };
 
   const handleSave = () => {
-    if (!formData.hours || !formData.branch || !formData.format) {
-      alert("חובה למלא את כל השדות");
-      return;
-    }
+  // אם לא מילאת שעות, לא בחרת האם מחנכת, או שאין סניפים כלל
+  if (!formData.hours || !formData.format || schedules.length === 0) {
+    alert("חובה למלא את כל השדות");
+    return;
+  }
 
-    const allData = localStorage.getItem(STORAGE_KEY);
-    const parsed = allData ? JSON.parse(allData) : {};
-    const key = `${username}_${password}`;
-    parsed[key] = { ...formData, saved: true };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
-    setFormData(prev => ({ ...prev, saved: true }));
+  // שמירת נתוני הטופס
+  const allData = localStorage.getItem(STORAGE_KEY);
+  const parsed = allData ? JSON.parse(allData) : {};
+  const key = `${username}_${password}`;
+  parsed[key] = { ...formData, saved: true };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
 
-    // Save schedules too
-    localStorage.setItem(`schedules_${username}`, JSON.stringify(schedules));
+  // שמירת סניפים ושעות
+  localStorage.setItem(`schedules_${username}`, JSON.stringify(schedules));
 
-    alert("הפרטים נשמרו בהצלחה");
-  };
+  // עדכון מצב השמירה
+  setFormData(prev => ({ ...prev, saved: true }));
 
+  alert("הפרטים נשמרו בהצלחה");
+};
   // פונקציה להוספת סניף חדש למערך
   const addSchedule = (branch: string, hoursByDay: { [day: string]: string[] }) => {
     setSchedules(prev => [...prev, { branch, hoursByDay }]);
