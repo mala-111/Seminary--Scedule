@@ -4,13 +4,15 @@ import { useLocation } from "react-router-dom";
 import "./Form.css";
 import ProfessionModal from "../components/ProfessionModal";
 import ScheduleModal from "../components/ScheduleModal";
+import DayOff from "../components/DayOff";
 
+// הגדרת מבנה הנתונים של הטופס
 interface FormData {
   hours: string;
   branch: string;
   format: string;
   saved: boolean;
-  professions?: { [profession: string]: string[] }; // מקצועות + מחזורים
+  professions?: { [profession: string]: string[] };
 }
 
 interface Schedule {
@@ -18,12 +20,16 @@ interface Schedule {
   hoursByDay: { [day: string]: string[] };
 }
 
+// מפתח שמירה ב-localStorage
 const STORAGE_KEY = "saved_user_data";
 
 const Form = () => {
   const location = useLocation();
   const { username, password } = location.state as { username: string; password: string };
 
+  // ----------------------------
+  // STATES לניהול הטופס
+  // ----------------------------
   const [formData, setFormData] = useState<FormData>({
     hours: "",
     branch: "",
@@ -31,31 +37,50 @@ const Form = () => {
     saved: false,
     professions: {},
   });
+
   const [professionOpen, setProfessionOpen] = useState(false);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [dayOffOpen, setDayOffOpen] = useState(false);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [dayOffPriorities, setDayOffPriorities] = useState<string[]>([]);
 
+  // ----------------------------
+  // STATE ורשימת כיתות הבנות
+  // ----------------------------
+  const [classes, setClasses] = useState<string[]>([]); // רשימת כיתות
+  const [currentClass, setCurrentClass] = useState<string>(""); // הקלט הנוכחי
+
+  // ----------------------------
+  // טעינת נתונים מ-localStorage
+  // ----------------------------
   useEffect(() => {
     const allData = localStorage.getItem(STORAGE_KEY);
     if (allData) {
       const parsed = JSON.parse(allData) as { [key: string]: FormData };
       const key = `${username}_${password}`;
-      if (parsed[key]) {
-        setFormData({ ...parsed[key], saved: true });
-      }
+      if (parsed[key]) setFormData({ ...parsed[key], saved: true });
     }
 
     const storedSchedules = localStorage.getItem(`schedules_${username}_${password}`);
     if (storedSchedules) setSchedules(JSON.parse(storedSchedules));
+
+    const tempDays = localStorage.getItem(`dayoff_temp_${username}_${password}`);
+    if (tempDays) setDayOffPriorities(JSON.parse(tempDays));
+
+    const tempClasses = localStorage.getItem(`classes_${username}_${password}`);
+    if (tempClasses) setClasses(JSON.parse(tempClasses));
   }, [username, password]);
 
+  // ----------------------------
+  // פונקציות לטיפול בשדות הטופס
+  // ----------------------------
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = () => {
-    if (!formData.hours || !formData.format || schedules.length === 0) {
-      alert("חובה למלא את כל השדות");
+    if (!formData.hours || !formData.format || schedules.length === 0 || dayOffPriorities.length !== 3) {
+      alert("חובה למלא את כל השדות ולבחור 3 עדיפויות ליום חופשי");
       return;
     }
 
@@ -66,6 +91,9 @@ const Form = () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
 
     localStorage.setItem(`schedules_${username}_${password}`, JSON.stringify(schedules));
+    localStorage.setItem(`dayoff_${username}_${password}`, JSON.stringify(dayOffPriorities));
+    localStorage.setItem(`classes_${username}_${password}`, JSON.stringify(classes));
+    localStorage.removeItem(`dayoff_temp_${username}_${password}`);
     setFormData(prev => ({ ...prev, saved: true }));
     alert("הפרטים נשמרו בהצלחה");
   };
@@ -74,7 +102,6 @@ const Form = () => {
     setSchedules(prev => [...prev, { branch, hoursByDay }]);
   };
 
-  // פונקציה לשמירת מקצוע ומחזורים
   const handleSaveProfession = (profession: string, cycles: string[]) => {
     setFormData(prev => ({
       ...prev,
@@ -82,6 +109,19 @@ const Form = () => {
     }));
   };
 
+  // ----------------------------
+  // פונקציה להוספת כיתה בלחיצה על ENTER
+  // ----------------------------
+  const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && currentClass.trim() !== "") {
+      setClasses(prev => [...prev, currentClass.trim()]);
+      setCurrentClass("");
+    }
+  };
+
+  // ----------------------------
+  // JSX של הדף
+  // ----------------------------
   return (
     <div className="form-page">
       <motion.div
@@ -91,6 +131,10 @@ const Form = () => {
         transition={{ duration: 0.8 }}
       >
         <h1>שלום ל-{username}</h1>
+
+        {/* ---------------------------- */}
+        {/* שעות ומחנכת */}
+        {/* ---------------------------- */}
         <div className="form-grid">
           <div className="field">
             <label>מספר שעות</label>
@@ -128,57 +172,122 @@ const Form = () => {
           </div>
         </div>
 
-        <div className="action-buttons">
-          <motion.button whileHover={{ scale: 1.06 }} onClick={() => setProfessionOpen(true)} disabled={formData.saved}>
-            מקצועות
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.06 }} onClick={() => setScheduleOpen(true)} disabled={formData.saved}>
-            הקלדת שעות תפוסות
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.06 }} onClick={handleSave} disabled={formData.saved}>
-            שמירת פרטים
-          </motion.button>
-        </div>
+        {/* ---------------------------- */}
+        {/* כפתורים - מקצועות, שעות תפוסות, יום חופשי, כיתות */}
+        {/* ---------------------------- */}
+       <div className="action-buttons">
+  {/* כל כפתור ומידע קשור נארז יחד */}
+  <div className="button-with-text">
+    <motion.button
+      whileHover={{ scale: 1.06 }}
+      onClick={() => setProfessionOpen(true)}
+      disabled={formData.saved}
+    >
+      מקצועות
+    </motion.button>
+    {/* הצגת מקצועות מתחת לכפתור */}
+    {formData.professions && Object.keys(formData.professions).length > 0 && (
+      <div className="sub-text">
+        {Object.entries(formData.professions).map(([p, cycles]) => (
+          <div key={p}>
+            <strong>{p}:</strong> {cycles.join(", ")}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
 
-        {/* הצגת מקצועות ומחזורים מתחת לכפתור מקצועות */}
-        {formData.professions && Object.keys(formData.professions).length > 0 && (
-          <div className="saved-professions">
-            {Object.entries(formData.professions).map(([p, cycles]) => (
-              <div key={p}>
-                <strong>{p}:</strong> {cycles.join(", ")}
-              </div>
+  <div className="button-with-text">
+    <motion.button
+      whileHover={{ scale: 1.06 }}
+      onClick={() => setScheduleOpen(true)}
+      disabled={formData.saved}
+    >
+      הקלדת שעות תפוסות
+    </motion.button>
+    {/* הצגת סניפים ושעות מתחת לכפתור */}
+    {schedules.length > 0 && (
+      <div className="sub-text">
+        {schedules.map((s, idx) => (
+          <div key={idx} style={{ marginBottom: "10px" }}>
+            <strong>סניף: {s.branch}</strong>
+            {Object.entries(s.hoursByDay).map(([day, hours]) => (
+              <div key={day}>יום {day}: {hours.join(", ")}</div>
             ))}
           </div>
-        )}
+        ))}
+      </div>
+    )}
+  </div>
 
-        {schedules.length > 0 && (
-          <div style={{ marginTop: "20px" }}>
-            {schedules.map((s, idx) => (
-              <div key={idx} style={{ marginBottom: "15px" }}>
-                <strong>סניף: {s.branch}</strong>
-                <div>
-                  {Object.entries(s.hoursByDay).map(([day, hours]) => (
-                    <div key={day}>
-                      יום {day}: {hours.join(", ")}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+  <div className="button-with-text">
+    <motion.button
+      whileHover={{ scale: 1.06 }}
+      onClick={() => setDayOffOpen(true)}
+      disabled={formData.saved}
+    >
+      בחירת יום חופשי
+    </motion.button>
+    {/* הצגת ימים חופשיים מתחת לכפתור */}
+    {dayOffPriorities.length > 0 && (
+      <div className="sub-text">
+        {dayOffPriorities[0] && <div>עדיפות א: {dayOffPriorities[0]}</div>}
+        {dayOffPriorities[1] && <div>עדיפות ב: {dayOffPriorities[1]}</div>}
+        {dayOffPriorities[2] && <div>עדיפות ג: {dayOffPriorities[2]}</div>}
+      </div>
+    )}
+  </div>
+
+  <div className="button-with-text">
+    <motion.button
+      whileHover={{ scale: 1.06 }}
+      onClick={handleSave}
+      disabled={formData.saved}
+    >
+      שמירת פרטים
+    </motion.button>
+  </div>
+
+  <div className="button-with-text">
+    {/* כיתות הבנות */}
+    <input
+      type="text"
+      placeholder="הקלד כיתה ולחץ ENTER"
+      value={currentClass}
+      onChange={e => setCurrentClass(e.target.value)}
+      onKeyDown={handleClassKeyDown}
+      disabled={formData.saved}
+    />
+    {classes.length > 0 && (
+      <div className="sub-text">
+        {classes.map((c, idx) => (
+          <div key={idx}>{c}</div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
       </motion.div>
 
+      {/* ---------------------------- */}
+      {/* מודלים חיצוניים */}
+      {/* ---------------------------- */}
       <ProfessionModal
         open={professionOpen}
         onClose={() => setProfessionOpen(false)}
-        onSaveProfession={handleSaveProfession} // כאן שולחים את הנתונים
+        onSaveProfession={handleSaveProfession}
       />
       <ScheduleModal
         open={scheduleOpen}
         onClose={() => setScheduleOpen(false)}
         username={username}
         addSchedule={addSchedule}
+      />
+      <DayOff
+        open={dayOffOpen}
+        onClose={() => setDayOffOpen(false)}
+        onSaveDayOff={(days) => setDayOffPriorities(days)}
+        initialSelection={dayOffPriorities}
       />
     </div>
   );
