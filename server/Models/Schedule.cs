@@ -19,14 +19,14 @@ namespace MyWebApiProject.Models
         public Guid AllClassesID { get; set; }
 
         // public Teacher teacher {get; set;}
-        public string SubjectDTOay  {get;  set;}="";
+        public string Subject  {get;  set;}="";
 
          [Required]
         public string Day  {get;  set;}="";
         [Required]
 
         public string Hour  {get; set; }="";
-
+  
 
     }
 
@@ -37,4 +37,5 @@ namespace MyWebApiProject.Models
         public string Hour  {get; set; }
 
     }
+    
 }

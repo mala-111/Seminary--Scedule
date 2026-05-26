@@ -15,13 +15,19 @@ namespace MyWebApiProject.Controllers
         {
             _ScheduleContext = ScheduleContext;
         }
-
+               [HttpGet("{id}")]
+public async Task<ActionResult<Teacher>> GetTeacher(Guid id)
+{
+    var teacher = await _ScheduleContext.Teachers.FindAsync(id);
+    if (teacher == null) return NotFound();
+    return teacher;
+}
         // POST: /manager/home/newTeacher
         // הכנסת מורה חדש למערכת
         [HttpPost("newTeacher")]
         public async Task<ActionResult<Teacher>> CreateTeacher(TeacherDTO dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.EmployeeCode))
+           if (await _ScheduleContext.Teachers.AnyAsync(a => a.EmployeeCode == dto.EmployeeCode))
             {
                 return BadRequest("שם וקוד עובד הם חובה.");
             }
@@ -44,8 +50,7 @@ namespace MyWebApiProject.Controllers
             _ScheduleContext.Teachers.Add(teacher);
             await _ScheduleContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTeachers), new { id = teacher.TeacherID }, teacher);
-        }
+             return CreatedAtAction(nameof(GetTeacher), new { id = teacher.TeacherID }, teacher);        }
 
         // GET: /manager/home/showSchedule/employees/all
         // הצגת מערכת השעות הכללית לפי מורים
@@ -64,7 +69,8 @@ namespace MyWebApiProject.Controllers
             if (teacher == null) return NotFound("מורה לא נמצא.");
 
             teacher.Name = dto.Name ?? teacher.Name;
-            teacher.EmployeeCode = dto.EmployeeCode ?? teacher.EmployeeCode;
+            if (!string.IsNullOrWhiteSpace(dto.EmployeeCode))
+                  teacher.EmployeeCode = dto.EmployeeCode.Trim();
             teacher.WeeklyHours = dto.WeeklyHours;
             teacher.PreferredDayOff = dto.PreferredDayOff;
             teacher.IsClassTeacher = dto.IsClassTeacher;

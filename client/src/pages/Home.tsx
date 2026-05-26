@@ -30,16 +30,46 @@ const Home = () => {
   }, []);
 
   const handleLogin = () => {
-    if (!username.trim() || !password.trim()) {
-      alert("חובה למלא שם משתמש וסיסמה");
+  const cleanUsername = username.trim();
+  const cleanPassword = password.trim();
+
+  if (!cleanUsername || !cleanPassword) {
+    alert("חובה למלא שם משתמש וסיסמה");
+    return;
+  }
+
+  // התחברות מנהל
+  if (cleanUsername.toLowerCase() === "adminaration") {
+    if (cleanPassword === "1234") {
+      navigate("/form-admin");
       return;
     }
-    const filtered = savedUsers.filter((u) => u.username !== username);
-    const updated = [{ username, password }, ...filtered].slice(0, 3);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setSavedUsers(updated);
-    navigate("/form", { state: { username, password } });
-  };
+
+    alert("סיסמת מנהל שגויה");
+    return;
+  }
+
+  // שמירת משתמשים רגילים
+  const filtered = savedUsers.filter(
+    (u) => u.username !== cleanUsername
+  );
+
+  const updated = [
+    { username: cleanUsername, password: cleanPassword },
+    ...filtered,
+  ].slice(0, 3);
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+
+  setSavedUsers(updated);
+
+  navigate("/form", {
+    state: {
+      username: cleanUsername,
+      password: cleanPassword,
+    },
+  });
+};
 
   const handleSelectSuggestion = (name: string) => {
     setUsername(name);

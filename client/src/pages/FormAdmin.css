@@ -1,0 +1,21 @@
+.admin-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  padding: 20px;
+}
+
+.admin-page input {
+  margin: 5px;
+  padding: 8px;
+}
+
+.admin-page button {
+  padding: 8px 12px;
+  background: #1e40af;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

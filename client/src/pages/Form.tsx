@@ -112,12 +112,32 @@ const Form = () => {
   // ----------------------------
   // פונקציה להוספת כיתה בלחיצה על ENTER
   // ----------------------------
-  const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && currentClass.trim() !== "") {
-      setClasses(prev => [...prev, currentClass.trim()]);
-      setCurrentClass("");
+const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    const value = currentClass.trim();
+
+    // חובה:
+    // 1-2 אותיות בעברית/אנגלית
+    // לאחר מכן 1-2 ספרות
+    // ללא רווחים או תווים נוספים
+    const classRegex = /^[A-Za-zא-ת]{1,2}[0-9]{1,2}$/;
+
+    if (!classRegex.test(value)) {
+      alert(
+        "כיתה לא תקינה. יש להזין 1-2 אותיות ולאחריהן 1-2 ספרות ללא רווחים"
+      );
+      return;
     }
-  };
+
+    if (!classes.includes(value)) {
+      setClasses(prev => [...prev, value]);
+    }
+
+    setCurrentClass("");
+  }
+};
 
   // ----------------------------
   // JSX של הדף
@@ -249,23 +269,42 @@ const Form = () => {
   </div>
 
   <div className="button-with-text">
-    {/* כיתות הבנות */}
-    <input
-      type="text"
-      placeholder="הקלד כיתה ולחץ ENTER"
-      value={currentClass}
-      onChange={e => setCurrentClass(e.target.value)}
-      onKeyDown={handleClassKeyDown}
-      disabled={formData.saved}
-    />
-    {classes.length > 0 && (
-      <div className="sub-text">
-        {classes.map((c, idx) => (
-          <div key={idx}>{c}</div>
-        ))}
-      </div>
-    )}
-  </div>
+  <label className="classes-label">
+    הקלידי את הכיתות בהן בנותיך לומדות (לחצי ENTER בין כיתה לכיתה)
+  </label>
+
+  <input
+    type="text"
+    placeholder="הקלידי כיתה"
+    value={currentClass}
+    onChange={e => setCurrentClass(e.target.value)}
+    onKeyDown={handleClassKeyDown}
+    disabled={formData.saved}
+    className="classes-input"
+  />
+
+  {classes.length > 0 && (
+    <div className="classes-container">
+      {classes.map((c, idx) => (
+        <div key={idx} className="class-tag">
+          <span>{c}</span>
+
+          {!formData.saved && (
+            <button
+              type="button"
+              className="remove-class-btn"
+              onClick={() =>
+                setClasses(prev => prev.filter((_, i) => i !== idx))
+              }
+            >
+              ×
+            </button>
+          )}
+        </div>
+      ))}
+    </div>
+  )}
+</div>
 </div>
       </motion.div>
 
