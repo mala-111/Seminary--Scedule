@@ -1,108 +1,139 @@
 import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { fetchTeachers, createTeacher } from "../redux/slices/teacherSlice";
+
 import "./FormAdmin.css";
 
-export default function FormAdmin() {
+import {
+  fetchSubjects,
+  createSubject,
+  deleteSubject,
+} from "../redux/slices/SubjectSlice";
+
+import {
+  useAppDispatch,
+  useAppSelector,
+} from "../redux/hooks";
+
+const SubjectAdmin = () => {
   const dispatch = useAppDispatch();
 
-  const { teachers, loading, error } = useAppSelector(
-    (state) => state.teachers
+  const { subjects } = useAppSelector(
+    (state) => state.subject
   );
 
   const [name, setName] = useState("");
-const [employeeCode, setEmployeeCode] = useState("");
-const [weeklyHours, setWeeklyHours] = useState(0);
-const [preferredDayOff, setPreferredDayOff] = useState("");
-const [isClassTeacher, setIsClassTeacher] = useState(false);
-const [isGroupingTeacher, setIsGroupingTeacher] = useState(false);
+  const [deleteName, setDeleteName] = useState("");
+
+  const [category, setCategory] =
+    useState("חול");
 
   useEffect(() => {
-    dispatch(fetchTeachers());
+    dispatch(fetchSubjects());
   }, [dispatch]);
+const filteredSubjects = subjects.filter(
+  (s) =>
+    s.name
+      .toLowerCase()
+      .includes(deleteName.toLowerCase())
+);
+  const handleAdd = async () => {
+    if (!name.trim()) return;
 
-  const handleAdd = () => {
-    if (!name || !employeeCode) return;
-
-    dispatch(
-      createTeacher({
+    await dispatch(
+      createSubject({
         name,
-        employeeCode,
-        weeklyHours: 0,
-        preferredDayOff: "",
-        isClassTeacher: false,
-        isGroupingTeacher: false,
+        category,
       })
     );
 
     setName("");
-    setEmployeeCode("");
+  };
+
+  const handleDelete = async (
+    name: string
+  ) => {
+    await dispatch(deleteSubject(name));
   };
 
   return (
-    <div className="admin-page">
-      <h1>Admin Panel</h1>
+    <div className="subject-admin">
+      <h2>ניהול מקצועות</h2>
 
-      {/* FORM */}
-      <div>
-        <input
-  type="number"
-  placeholder="Weekly Hours"
-  value={weeklyHours}
-  onChange={(e) => setWeeklyHours(Number(e.target.value))}
-/>
+      <input
+        value={name}
+        onChange={(e) =>
+          setName(e.target.value)
+        }
+        placeholder="שם מקצוע"
+      />
+
+      <h3>קטגוריה</h3>
+
+      <select
+        value={category}
+        onChange={(e) =>
+          setCategory(e.target.value)
+        }
+      >
+        <option value="קודש">
+          קודש
+        </option>
+
+        <option value="חול">
+          חול
+        </option>
+
+        <option value="הקבצות">
+          הקבצות
+        </option>
+      </select>
+
+      <button onClick={handleAdd}>
+        הוסף מקצוע
+      </button>
+
+      <hr />
+
+     <h3>מחיקת מקצוע</h3>
 
 <input
-  placeholder="Preferred Day Off"
-  value={preferredDayOff}
-  onChange={(e) => setPreferredDayOff(e.target.value)}
+  type="text"
+  placeholder="הקלידי שם מקצוע"
+  value={deleteName}
+  onChange={(e) =>
+    setDeleteName(e.target.value)
+  }
 />
 
-<label>
-  <input
-    type="checkbox"
-    checked={isClassTeacher}
-    onChange={(e) => setIsClassTeacher(e.target.checked)}
-  />
-  Class Teacher
-</label>
-
-<label>
-  <input
-    type="checkbox"
-    checked={isGroupingTeacher}
-    onChange={(e) => setIsGroupingTeacher(e.target.checked)}
-  />
-  Grouping Teacher
-</label>
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          placeholder="Employee Code"
-          value={employeeCode}
-          onChange={(e) => setEmployeeCode(e.target.value)}
-        />
-
-        <button onClick={handleAdd} disabled={loading}>
-          {loading ? "Loading..." : "Add Teacher"}
-        </button>
+{deleteName && (
+  <div className="suggestions">
+    {filteredSubjects.map((subject) => (
+      <div
+        key={subject.subjectID}
+        className="suggestion-item"
+        onClick={() =>
+          setDeleteName(subject.name)
+        }
+      >
+        {subject.name}
       </div>
+    ))}
+  </div>
+)}
 
-      {/* ERROR */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+<button
+  className="delete-btn"
+  onClick={() => {
+    if (!deleteName.trim()) return;
 
-      {/* LIST */}
-      <div>
-        {teachers.map((t) => (
-          <div key={t.teacherID}>
-            {t.name} - {t.employeeCode}
-          </div>
-        ))}
-      </div>
+    dispatch(deleteSubject(deleteName));
+
+    setDeleteName("");
+  }}
+>
+  מחק מקצוע
+</button>
     </div>
   );
-}
+};
+
+export default SubjectAdmin;

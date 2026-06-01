@@ -1,37 +1,41 @@
 import { useState } from "react";
 import "./SacredProfessions.css";
 import GroupMarking from "./GroupMarking";
+import { useEffect } from "react";
+import { useAppDispatch } from "../redux/hooks";
+import { useAppSelector } from "../redux/hooks";
+import { fetchSubjects } from "../redux/slices/SubjectSlice";
 
 interface Props {
   onClose: () => void;
   onSave: (profession: string, cycles: string[]) => void;
 }
 
-const sacredList = [
-  "תנ\"ך",
-  "תורה עיון",
-  "תורה בקיאות",
-  "סוגיות בתנך",
-  "הלכה",
-  "יהדות",
-  "הלכות שבת",
-  "מסילת ישרים",
-  "תפילה",
-  "שירה",
-  "חסידות",
-  "מוסר",
-  "חגים ומועדים",
-  "לישרים תהילה",
-  "ספר החינוך",
-  "נביא"
-];
 
 const SacredProfessions = ({ onClose, onSave }: Props) => {
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
   const [search, setSearch] = useState("");
 
-  const filteredList = sacredList.filter(p =>
-    p.toLowerCase().includes(search.trim().toLowerCase())
+  const dispatch = useAppDispatch();
+
+const { subjects } = useAppSelector(
+  (state) => state.subject
+);
+
+
+
+
+
+useEffect(() => {
+  dispatch(fetchSubjects());
+}, [dispatch]);
+
+ const filteredList = subjects
+  .filter((s) => s.category === "קודש")
+  .filter((s) =>
+    s.name
+      .toLowerCase()
+      .includes(search.trim().toLowerCase())
   );
 
   return (
@@ -50,8 +54,8 @@ const SacredProfessions = ({ onClose, onSave }: Props) => {
             />
             <div className="profession-list">
               {search && filteredList.map(p => (
-                <button key={p} onClick={() => setSelectedProfession(p)}>
-                  {p}
+                <button key={p.subjectID} onClick={() => setSelectedProfession(p.name)}>
+                  {p.name}
                 </button>
               ))}
               {search && filteredList.length === 0 && <p className="no-results">לא נמצאו מקצועות</p>}

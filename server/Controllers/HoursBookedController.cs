@@ -23,15 +23,24 @@ namespace MyWebApiProject.Controllers
         {
             var booked = new HoursBooked
             {
+                TeacherID = dto.TeacherID,
                 Day = dto.Day,
                 HourStart = dto.HourStart,
-                HourEnd = dto.HourEnd
+                HourEnd = dto.HourEnd,
+                Reason=dto.Reason
+
             };
+
+
+      
+
+
+
+
 
             _ScheduleContext.HoursBooked.Add(booked);
             await _ScheduleContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAllBookedHours), new { id = booked.BookingID }, booked);
-        }
+            return CreatedAtAction(nameof(GetAllBookedHours), new { teacherId = booked.TeacherID }, booked);        }
 
         // GET: /employee/home/showSchedule/allPersonal
         // צפיה בשעות תפוסות של המורה
@@ -56,14 +65,16 @@ public async Task<IActionResult> MoveBookedHoursToHistory(Guid id)
         Day = booked.Day,
         HourStart = booked.HourStart,
         HourEnd = booked.HourEnd,
-        UpdateHistory = DateTime.UtcNow
+        UpdateHistory = DateTime.UtcNow,
+        Reason=booked.Reason
+
     };
 
     _ScheduleContext.HoursBookedHistory.Add(history);
     _ScheduleContext.HoursBooked.Remove(booked);
 
     await _ScheduleContext.SaveChangesAsync();
-    return Ok(new { message = "Booked hours moved to history successfully", historyId = history.HistoryId });
+    return Ok(booked);
 }
     }
 }

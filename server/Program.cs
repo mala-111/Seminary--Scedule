@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.MapGet("/", () => "API is alive");
 
 // Swagger רק בפיתוח
 if (app.Environment.IsDevelopment())
@@ -40,11 +41,21 @@ if (app.Environment.IsDevelopment())
 }
 
 // CORS לפני הכל
+app.UseRouting();
+
 app.UseCors("AllowAll");
+
+app.UseAuthorization();
 
 // ❗ בפיתוח אפשר להשאיר כבוי כדי למנוע בעיות HTTPS מול React
 // app.UseHttpsRedirection();
 
 app.MapControllers();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ScheduleContext>();
 
+    SeedData.SeedSubjects(db);
+    SeedData.SeedGrades(db);
+}
 app.Run();

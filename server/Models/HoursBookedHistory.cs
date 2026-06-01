@@ -20,6 +20,8 @@ public class HoursBookedHistory
 
     [Required]
     public TimeSpan HourEnd { get; set; }
+
+    public string Reason { get; set; }="";
      public DateTime UpdateHistory{get; set;}
     // public virtual Teacher? Teacher { get; set; }
 }

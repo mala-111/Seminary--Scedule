@@ -6,7 +6,7 @@ using MyWebApiProject.Models;
 namespace MyWebApiProject.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ScheduleController : ControllerBase
     {
         private readonly ScheduleContext _ScheduleContext;

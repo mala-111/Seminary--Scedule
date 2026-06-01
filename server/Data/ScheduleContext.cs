@@ -8,7 +8,7 @@ namespace MyWebApiProject.Data
         public ScheduleContext(DbContextOptions<ScheduleContext> options) : base(options) { }
 
         // כאן נרשום את כל הטבלאות
-        public DbSet<Class> Classes { get; set; }
+        public DbSet<Class> Grades { get; set; }
         public DbSet<AllClasses> AllClasses { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Subject> Subjects { get; set; }
@@ -19,7 +19,7 @@ namespace MyWebApiProject.Data
 
 
 
-        public DbSet<ClassHistory> ClassesHistory { get; set; }
+        public DbSet<ClassHistory> GradesHistory { get; set; }
         public DbSet<AllClassesHistory> AllClassesHistory { get; set; }
         public DbSet<TeacherHistory> TeachersHistory { get; set; }
         public DbSet<SubjectHistory> SubjectsHistory { get; set; }

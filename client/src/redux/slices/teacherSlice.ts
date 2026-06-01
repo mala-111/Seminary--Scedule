@@ -42,7 +42,7 @@ export const createTeacher = createAsyncThunk(
   }
 );
 
-const teacherSlice = createSlice({
+const TeacherSlice = createSlice({
   name: "teachers",
   initialState,
   reducers: {},
@@ -77,4 +77,4 @@ const teacherSlice = createSlice({
   },
 });
 
-export default teacherSlice.reducer;
+export default TeacherSlice.reducer;

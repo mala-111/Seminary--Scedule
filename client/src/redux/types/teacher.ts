@@ -3,7 +3,11 @@ export interface Teacher {
   employeeCode: string;
   name: string;
   weeklyHours: number;
-  preferredDayOff: string;
+  preferredDayOffA: string;
+  preferredDayOffB: string;
+  preferredDayOffC: string;
   isClassTeacher: boolean;
   isGroupingTeacher: boolean;
+
+  
 }

@@ -21,13 +21,19 @@ public class HoursBooked
     [Required]
     public TimeSpan HourEnd { get; set; }
 
+    public string Reason { get; set; }="";
+
     // public virtual Teacher? Teacher { get; set; }
+    // NAVIGATION PROPERTY
+        public Teacher? Teacher { get; set; }
 }
 public class HoursBookedDTO
     {
+      public Guid TeacherID { get; set; }
       public string Day { get; set; }="";
       public TimeSpan HourStart { get; set; }
       public TimeSpan HourEnd { get; set; }
+      public string Reason { get; set; }="";
 
     }
     }

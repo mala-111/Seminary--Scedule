@@ -9,6 +9,8 @@ public class Subject
     [Required]
     public string Name { get; set; }="";
 
+    public string Category { get; set; } = "";
+
     // קשר N:M למורים
     // public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }
@@ -16,6 +18,8 @@ public class Subject
 public class SubjectDTO
     {
      public string Name { get; set; }="";
+
+     public string Category { get; set; } = "";
 
 
     }

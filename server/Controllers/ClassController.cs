@@ -6,7 +6,7 @@ using MyWebApiProject.Models;
 namespace MyWebApiProject.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ClassController : ControllerBase
     {
         private readonly ScheduleContext _ScheduleContext;
@@ -16,17 +16,17 @@ namespace MyWebApiProject.Controllers
             _ScheduleContext = ScheduleContext;
         }
 
-        // GET: /manager/home/showSchedule/classes
+        // GET: /manager/home/showSchedule/Grades
         // הצגת מערכת השעות הכללית לפי כיתות
-        [HttpGet("showSchedule/classes")]
-        public async Task<ActionResult<IEnumerable<Class>>> GetShowScheduleClasses(int skip = 0, int take = 10)
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Class>>> GetShowScheduleGrades(int skip = 0, int take = 1000)
         {
-            return await _ScheduleContext.Classes.Skip(skip).Take(take).ToListAsync();
+            return await _ScheduleContext.Grades.Skip(skip).Take(take).ToListAsync();
         }
 
         // POST: /manager/home/newClass
         // הכנסת כיתה חדשה למערכת
-        [HttpPost("newClass")]
+        [HttpPost]
         public async Task<ActionResult<Class>> CreateClass(ClassDTO cl)
         {
             if (string.IsNullOrWhiteSpace(cl.Name))
@@ -34,7 +34,7 @@ namespace MyWebApiProject.Controllers
                 return BadRequest("שם הכיתה הוא חובה.");
             }
 
-            if (_ScheduleContext.Classes.Any(a => a.Name != null && a.Name.Trim().ToUpper() == cl.Name.Trim().ToUpper()))
+            if (_ScheduleContext.Grades.Any(a => a.Name != null && a.Name.Trim().ToUpper() == cl.Name.Trim().ToUpper()))
             {
                 return Conflict("כיתה עם שם זה כבר קיימת.");
             }
@@ -44,10 +44,10 @@ namespace MyWebApiProject.Controllers
                 Name = cl.Name.Trim()
             };
 
-            _ScheduleContext.Classes.Add(classEntity);
+            _ScheduleContext.Grades.Add(classEntity);
             await _ScheduleContext.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetShowScheduleClasses), new { id = classEntity.ClassID }, classEntity);
+            return CreatedAtAction(nameof(GetShowScheduleGrades), new { id = classEntity.ClassID }, classEntity);
         }
 
         // DELETE: /manager/home/delete/class
@@ -55,22 +55,22 @@ namespace MyWebApiProject.Controllers
         // [HttpDelete("delete/class/{id}")]
         // public async Task<IActionResult> DeleteClass(Guid id)
         // {
-        //     var classEntity = await _ScheduleContext.Classes.FindAsync(id);
+        //     var classEntity = await _ScheduleContext.Grades.FindAsync(id);
         //     if (classEntity == null)
         //     {
         //         return NotFound("כיתה לא נמצאה.");
         //     }
 
-        //     _ScheduleContext.Classes.Remove(classEntity);
+        //     _ScheduleContext.Grades.Remove(classEntity);
         //     await _ScheduleContext.SaveChangesAsync();
 
         //     return NoContent();
         // }
 
-        [HttpPut("delete/class/{id}")]
+        [HttpPut("{id}")]
 public async Task<IActionResult> MoveClassToHistory(Guid id)
 {
-    var classEntity = await _ScheduleContext.Classes.FindAsync(id);
+    var classEntity = await _ScheduleContext.Grades.FindAsync(id);
     if (classEntity == null) return NotFound();
 
     var history = new ClassHistory
@@ -80,8 +80,8 @@ public async Task<IActionResult> MoveClassToHistory(Guid id)
         UpdateHistory = DateTime.UtcNow
     };
 
-    _ScheduleContext.ClassesHistory.Add(history);
-    _ScheduleContext.Classes.Remove(classEntity);
+    _ScheduleContext.GradesHistory.Add(history);
+    _ScheduleContext.Grades.Remove(classEntity);
 
     await _ScheduleContext.SaveChangesAsync();
     return Ok(new { message = "Class moved to history successfully", historyId = history.HistoryId });

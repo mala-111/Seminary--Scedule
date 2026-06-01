@@ -6,7 +6,7 @@ using MyWebApiProject.Models;
 namespace MyWebApiProject.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TeacherController : ControllerBase
     {
         private readonly ScheduleContext _ScheduleContext;
@@ -24,33 +24,38 @@ public async Task<ActionResult<Teacher>> GetTeacher(Guid id)
 }
         // POST: /manager/home/newTeacher
         // הכנסת מורה חדש למערכת
-        [HttpPost("newTeacher")]
-        public async Task<ActionResult<Teacher>> CreateTeacher(TeacherDTO dto)
+          [HttpPost("newTeacher")]
+        public async Task<IActionResult> CreateTeacher(TeacherDTO dto)
         {
-           if (await _ScheduleContext.Teachers.AnyAsync(a => a.EmployeeCode == dto.EmployeeCode))
+            // בדיקה אם כבר קיים מורה עם אותו EmployeeCode
+            var exists = await _ScheduleContext.Teachers
+                .AnyAsync(t => t.EmployeeCode == dto.EmployeeCode);
+
+            if (exists)
             {
-                return BadRequest("שם וקוד עובד הם חובה.");
+                return Conflict(new { message = "Teacher with this employee code already exists." });
             }
 
-            if (_ScheduleContext.Teachers.Any(a => a.EmployeeCode == dto.EmployeeCode))
-            {
-                return Conflict("מורה עם קוד עובד זה כבר קיים.");
-            }
-
+            // יצירת אובייקט חדש
             var teacher = new Teacher
             {
-                Name = dto.Name.Trim(),
-                EmployeeCode = dto.EmployeeCode.Trim(),
+                TeacherID = Guid.NewGuid(),
+                EmployeeCode = dto.EmployeeCode,
+                Name = dto.Name,
                 WeeklyHours = dto.WeeklyHours,
-                PreferredDayOff = dto.PreferredDayOff,
                 IsClassTeacher = dto.IsClassTeacher,
-                IsGroupingTeacher = dto.IsGroupingTeacher
+                IsGroupingTeacher = dto.IsGroupingTeacher,
+                PreferredDayOffA = dto.PreferredDayOffA,
+                PreferredDayOffB = dto.PreferredDayOffB,
+                PreferredDayOffC = dto.PreferredDayOffC
             };
 
             _ScheduleContext.Teachers.Add(teacher);
             await _ScheduleContext.SaveChangesAsync();
 
-             return CreatedAtAction(nameof(GetTeacher), new { id = teacher.TeacherID }, teacher);        }
+            // מחזיר את האובייקט שנוצר עם קוד 201 Created
+           return Ok(teacher);
+        }
 
         // GET: /manager/home/showSchedule/employees/all
         // הצגת מערכת השעות הכללית לפי מורים
@@ -72,7 +77,11 @@ public async Task<ActionResult<Teacher>> GetTeacher(Guid id)
             if (!string.IsNullOrWhiteSpace(dto.EmployeeCode))
                   teacher.EmployeeCode = dto.EmployeeCode.Trim();
             teacher.WeeklyHours = dto.WeeklyHours;
-            teacher.PreferredDayOff = dto.PreferredDayOff;
+            teacher.PreferredDayOffA = dto.PreferredDayOffA;
+                        teacher.PreferredDayOffB = dto.PreferredDayOffB;
+
+            teacher.PreferredDayOffB = dto.PreferredDayOffB;
+
             teacher.IsClassTeacher = dto.IsClassTeacher;
             teacher.IsGroupingTeacher = dto.IsGroupingTeacher;
 
@@ -105,7 +114,10 @@ public async Task<IActionResult> MoveTeacherToHistory(Guid id)
         Name = teacher.Name,
         EmployeeCode = teacher.EmployeeCode,
         WeeklyHours = teacher.WeeklyHours,
-        PreferredDayOff = teacher.PreferredDayOff,
+        PreferredDayOffA = teacher.PreferredDayOffA,
+                PreferredDayOffB = teacher.PreferredDayOffB,
+        PreferredDayOffC = teacher.PreferredDayOffC,
+
         IsClassTeacher = teacher.IsClassTeacher,
         IsGroupingTeacher = teacher.IsGroupingTeacher,
         UpdateHistory = DateTime.UtcNow

@@ -63,5 +63,38 @@ public async Task<IActionResult> MoveTeacherToSubjectToHistory(Guid id)
     await _ScheduleContext.SaveChangesAsync();
     return Ok(new { message = "TeacherToSubject moved to history successfully", historyId = history.HistoryId });
 }
+
+[HttpPost("assignByNames")]
+public async Task<IActionResult> AssignByNames(TeacherToSubjectDTO dto)
+{
+    var subject = await _ScheduleContext.Subjects
+        .FirstOrDefaultAsync(s =>
+            s.Name == dto.SubjectName);
+
+    if (subject == null)
+        return BadRequest(
+            $"Subject '{dto.SubjectName}' not found");
+
+    var cls = await _ScheduleContext.Grades
+        .FirstOrDefaultAsync(c =>
+            c.Name == dto.ClassName);
+
+    if (cls == null)
+        return BadRequest(
+            $"Class '{dto.ClassName}' not found");
+
+    var entity = new TeacherToSubject
+    {
+        TeacherID = dto.TeacherID,
+        SubjectID = subject.SubjectID,
+        ClassID = cls.ClassID
+    };
+
+    _ScheduleContext.TeacherToSubjects.Add(entity);
+
+    await _ScheduleContext.SaveChangesAsync();
+
+    return Ok(entity);
+}
     }
 }

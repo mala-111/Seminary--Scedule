@@ -1,21 +1,51 @@
-.admin-page {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+.subject-admin {
+  max-width: 700px;
+  margin: 0 auto;
   padding: 20px;
 }
 
-.admin-page input {
-  margin: 5px;
-  padding: 8px;
+.subject-admin h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.admin-page button {
-  padding: 8px 12px;
-  background: #1e40af;
-  color: white;
-  border: none;
+.add-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.add-section input,
+.add-section select {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.add-btn {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.subject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subject-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px;
+
+  border: 1px solid #ddd;
+
+  border-radius: 8px;
+}
+
+.delete-btn {
+  padding: 6px 12px;
   cursor: pointer;
 }

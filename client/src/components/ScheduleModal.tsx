@@ -28,26 +28,37 @@ const ScheduleModal = ({ open, onClose, username, addSchedule }: ScheduleModalPr
   };
 
   const handleAddBranch = () => {
-    if (!branch) {
-      alert("חובה להזין שם סניף");
-      return;
-    }
+  if (!branch) {
+    alert("חובה להזין שם סניף");
+    return;
+  }
+
+  if (!hasSelectedHours) {
+    alert("יש לבחור לפחות שעה אחת");
+    return;
+  }
+
+  addSchedule(branch, hoursByDay);
+  setBranch("");
+  setHoursByDay({});
+};
+
+ const handleClose = () => {
+  if (branch && !hasSelectedHours) {
+    alert("יש לבחור לפחות שעה אחת עבור הסניף");
+    return;
+  }
+
+  if (branch && hasSelectedHours) {
     addSchedule(branch, hoursByDay);
-    setBranch("");
-    setHoursByDay({});
-  };
+  }
 
-  const handleClose = () => {
-    // שמירה של הסניף האחרון אם יש שם סניף ושעות
-    if (branch && Object.keys(hoursByDay).length > 0) {
-      addSchedule(branch, hoursByDay);
-    }
-    setBranch("");
-    setHoursByDay({});
-    onClose();
-  };
-
+  setBranch("");
+  setHoursByDay({});
+  onClose();
+};
   if (!open) return null;
+  const hasSelectedHours =Object.values(hoursByDay).some(hours => hours.length > 0);
 
   return (
     <div className="modal-overlay">
@@ -89,7 +100,9 @@ const ScheduleModal = ({ open, onClose, username, addSchedule }: ScheduleModalPr
 
         <div className="modal-buttons">
           <button onClick={handleAddBranch}>הוספת סניף</button>
-          <button onClick={handleClose}>סגור</button>
+          <button onClick={handleClose}>שמור</button>
+          <button onClick={onClose}>חזרה</button>
+          
         </div>
       </div>
     </div>

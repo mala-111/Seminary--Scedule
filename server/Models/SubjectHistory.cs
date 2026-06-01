@@ -10,6 +10,9 @@ public class SubjectHistory
     [Required]
     public string Name { get; set; }="";
      public DateTime UpdateHistory{get; set;}
+
+    public string Category { get; set; } = "";
+
     // קשר N:M למורים
     // public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
 }

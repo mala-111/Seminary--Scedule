@@ -1,45 +1,36 @@
 import { useState } from "react";
 import "./SandProfessions.css";
 import GroupMarking from "./GroupMarking";
+import { useEffect } from "react";
+import { useAppDispatch } from "../redux/hooks";
+import { useAppSelector } from "../redux/hooks";
+import { fetchSubjects } from "../redux/slices/SubjectSlice";
 
 interface Props {
   onClose: () => void;
   onSave: (profession: string, cycles: string[]) => void;
 }
 
-const sandList = [
-  "פיזיקה",
-  "כימיה",
-  "ביולוגיה",
-  "מדעים",
-  "ספרות",
-  "היסטוריה",
-  "גאוגרפיה",
-  "אמנות",
-  "מוסיקה",
-  "התעמלות",
-  "מחשבים",
-  "כלכלה",
-  "מדעי החברה",
-  "פסיכולוגיה",
-  "מדעי הסביבה",
-  "עיצוב גרפי",
-  "רובוטיקה",
-  "אזרחות",
-  "תקשורת",
-  "לשון והבעה",
-  "תחביר",
-  "דקדוק"
-];
+
 
 const SandProfessions = ({ onClose, onSave }: Props) => {
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+   const dispatch = useAppDispatch();
+const { subjects } = useAppSelector(
+  (state) => state.subject
+);
+useEffect(() => {
+  dispatch(fetchSubjects());
+}, [dispatch]);
 
-  const filteredList = sandList.filter(p =>
-    p.toLowerCase().includes(search.trim().toLowerCase())
+const filteredList = subjects
+  .filter((s) => s.category === "חול")
+  .filter((s) =>
+    s.name
+      .toLowerCase()
+      .includes(search.trim().toLowerCase())
   );
-
   return (
     <div className="modal-overlay">
       <div className="modal-box">
@@ -54,14 +45,21 @@ const SandProfessions = ({ onClose, onSave }: Props) => {
               className="search-input"
               autoFocus
             />
-            <div className="profession-list">
-              {search && filteredList.map(p => (
-                <button key={p} onClick={() => setSelectedProfession(p)}>
-                  {p}
-                </button>
-              ))}
-              {search && filteredList.length === 0 && <p className="no-results">לא נמצאו מקצועות</p>}
-            </div>
+           <div className="profession-list">
+  {search &&
+    filteredList.map((p) => (
+      <button
+        key={p.subjectID}
+        onClick={() => setSelectedProfession(p.name)}
+      >
+        {p.name}
+      </button>
+    ))}
+
+  {search && filteredList.length === 0 && (
+    <p className="no-results">לא נמצאו מקצועות</p>
+  )}
+</div>
             <button onClick={onClose} className="close-btn">חזרה</button>
           </>
         ) : (

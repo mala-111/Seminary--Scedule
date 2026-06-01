@@ -17,9 +17,15 @@ public class Teacher
     public string Name { get; set; }="";
 
     public int WeeklyHours { get; set; }
-    public string PreferredDayOff { get; set; }="";
-    public bool IsClassTeacher { get; set; }
+       public bool IsClassTeacher { get; set; }
     public bool IsGroupingTeacher { get; set; }
+
+ 
+    public string PreferredDayOffA{ get; set; }="";
+
+    public string PreferredDayOffB{ get; set; }="";
+    public string PreferredDayOffC{ get; set; }="";
+    
 
 
     // קשרים רבים-לרבים
@@ -42,7 +48,10 @@ public class TeacherDTO
     public string Name { get; set; }="";
 
     public int WeeklyHours { get; set; }
-    public string PreferredDayOff { get; set; }="";
+    public string PreferredDayOffA{ get; set; }="";
+
+    public string PreferredDayOffB{ get; set; }="";
+    public string PreferredDayOffC{ get; set; }="";
     public bool IsClassTeacher { get; set; }
     public bool IsGroupingTeacher { get; set; }
 

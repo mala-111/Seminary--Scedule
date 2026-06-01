@@ -6,7 +6,7 @@ using MyWebApiProject.Models;
 namespace MyWebApiProject.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class SubjectController : ControllerBase
     {
         private readonly ScheduleContext _ScheduleContext;
@@ -31,7 +31,9 @@ namespace MyWebApiProject.Controllers
                 return Conflict("מקצוע זה כבר קיים.");
             }
 
-            var subject = new Subject { Name = dto.Name.Trim() };
+            var subject = new Subject {
+                 Name = dto.Name.Trim(),
+             Category = dto.Category};
             _ScheduleContext.Subjects.Add(subject);
             await _ScheduleContext.SaveChangesAsync();
             return CreatedAtAction(nameof(GetSubjects), new { id = subject.SubjectID }, subject);
@@ -39,11 +41,11 @@ namespace MyWebApiProject.Controllers
 
         // GET: /employee/home/showSchedule/subject
         // צפייה במקצועות
-        [HttpGet("showSchedule/subject")]
-        public async Task<ActionResult<IEnumerable<Subject>>> GetSubjects(int skip = 0, int take = 10)
-        {
-            return await _ScheduleContext.Subjects.Skip(skip).Take(take).ToListAsync();
-        }
+       [HttpGet("showSchedule/subject")]
+public async Task<ActionResult<IEnumerable<Subject>>> GetSubjects()
+{
+    return await _ScheduleContext.Subjects.ToListAsync();
+}
 
         // DELETE: /manager/home/delete/subject
         // מחיקת מקצוע
@@ -59,16 +61,21 @@ namespace MyWebApiProject.Controllers
         // }
 
 
-        [HttpPut("delete/subject/{id}")]
-public async Task<IActionResult> MoveSubjectToHistory(Guid id)
+        [HttpPut("delete/subject/{name}")]
+public async Task<IActionResult> MoveSubjectToHistory(string name)
 {
-    var subject = await _ScheduleContext.Subjects.FindAsync(id);
-    if (subject == null) return NotFound();
+    // חיפוש לפי שם במקום FindAsync
+    var subject = await _ScheduleContext.Subjects
+        .FirstOrDefaultAsync(s => s.Name == name);
+
+    if (subject == null) 
+        return NotFound("המקצוע לא נמצא.");
 
     var history = new SubjectHistory
     {
         SubjectID = subject.SubjectID,
         Name = subject.Name,
+        Category = subject.Category,
         UpdateHistory = DateTime.UtcNow
     };
 
