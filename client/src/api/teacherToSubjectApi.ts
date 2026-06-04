@@ -1,13 +1,14 @@
-// ============================================
-// src/api/teacherToSubjectApi.ts
-// ============================================
+
 
 import axios from "axios";
 
 import type{ TeacherToSubject } from "../redux/types/teacherToSubject";
 
+const port = import.meta.env.VITE_API_PORT
+
+
 const BASE_URL =
-  "https://localhost:5049/api/TeacherToSubject";
+  `https://localhost:${port}/api/TeacherToSubject`;
 
 export const getTeacherToSubjects =
   async () => {

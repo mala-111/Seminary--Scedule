@@ -4,8 +4,11 @@ import axios from "axios";
 
 import type{ AllClasses } from "../redux/types/allClasses";
 
+const port = import.meta.env.VITE_API_PORT
+console.log("API PORT:", port);
 const BASE_URL =
-  "http://localhost:5049/api/AllClasses";
+  `http://localhost:${port}/api/AllClasses`;
+  console.log("BASE_URL:", BASE_URL);
 
 export const getAllClasses = async () => {
   const response = await axios.get(

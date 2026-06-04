@@ -19,11 +19,19 @@ const Home = () => {
   }, [dispatch]);
 
   // סינון שמות עובדים להצעות
-  const filteredEmployees = employees.filter((e) =>
-    e.name.toLowerCase().includes(username.toLowerCase())
+  const recentUsers: {
+    employeeId: string;
+    name: string;
+  }[] = JSON.parse(
+    localStorage.getItem("recentUsers") || "[]"
+  );
+
+  const filteredEmployees = recentUsers.filter((u) =>
+    u.name.toLowerCase().includes(username.toLowerCase())
   );
 
   const handleLogin = () => {
+
     const cleanUsername = username.trim();
     const cleanPassword = password.trim();
 
@@ -33,15 +41,46 @@ const Home = () => {
     }
 
     // מנהל
-    if (cleanUsername.toLowerCase() === "adminaration") {
-      if (cleanPassword === "1234") {
-        navigate("/form-admin");
-        return;
-      }
-      alert("סיסמת מנהל שגויה");
-      return;
-    }
+   // קבלת מנהלים מ-localStorage
+const admins: {username: string, password: string}[] = JSON.parse(
+  localStorage.getItem("admins") || '[]'
+);
 
+const admin = admins.find(
+  a => a.username.toLowerCase() === cleanUsername.toLowerCase()
+);
+
+if (admin) {
+  // מנהל רשום
+  if (admin.password === cleanPassword) {
+    // שמירה ב-recentUsers
+    const recentUsers = JSON.parse(localStorage.getItem("recentUsers") || "[]");
+    const updatedUsers = [
+      { employeeId: "admin_" + admin.username, name: admin.username },
+      ...recentUsers.filter(u => u.employeeId !== "admin_" + admin.username)
+    ];
+    localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
+
+    navigate("/form-admin");
+    return;
+  } else {
+    alert("סיסמת מנהל שגויה");
+    return;
+  }
+}
+
+// מקרה backward compatibility למנהל שלא שונה
+if (cleanUsername.toLowerCase() === "adminaration" && cleanPassword === "1234") {
+  const recentUsers = JSON.parse(localStorage.getItem("recentUsers") || "[]");
+  const updatedUsers = [
+    { employeeId: "admin_adminaration", name: "adminaration" },
+    ...recentUsers.filter(u => u.employeeId !== "admin_adminaration")
+  ];
+  localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
+
+  navigate("/form-admin");
+  return;
+}
     // עובד
     const employee = employees.find(
       (e) => e.name.toLowerCase() === cleanUsername.toLowerCase()
@@ -56,6 +95,24 @@ const Home = () => {
       alert("סיסמה שגויה");
       return;
     }
+    const recentUsers = JSON.parse(
+      localStorage.getItem("recentUsers") || "[]"
+    );
+
+    const updatedUsers = [
+      {
+        employeeId: employee.employeeId,
+        name: employee.name,
+      },
+      ...recentUsers.filter(
+        (u: any) => u.employeeId !== employee.employeeId
+      ),
+    ];
+
+    localStorage.setItem(
+      "recentUsers",
+      JSON.stringify(updatedUsers.slice(0, 3))
+    );
 
     navigate("/form", {
       state: {
@@ -125,17 +182,17 @@ const Home = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-<motion.button
-  style={{ padding: "10px 20px", fontSize: "16px" }}
-  whileHover={{
-    scale: 1.08,
-    boxShadow: "0 10px 25px rgba(59,130,246,0.5)",
-  }}
-  whileTap={{ scale: 0.96 }}
-  onClick={handleLogin}
->
-  כניסה למערכת
-</motion.button>
+        <motion.button
+          style={{ padding: "10px 20px", fontSize: "16px" }}
+          whileHover={{
+            scale: 1.08,
+            boxShadow: "0 10px 25px rgba(59,130,246,0.5)",
+          }}
+          whileTap={{ scale: 0.96 }}
+          onClick={handleLogin}
+        >
+          כניסה למערכת
+        </motion.button>
       </motion.div>
     </div>
   );

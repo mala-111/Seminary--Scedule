@@ -1,7 +1,8 @@
 import axios from "axios";
 import type { Class } from "../redux/types/class";
+const port = import.meta.env.VITE_API_PORT
 
-const BASE_URL = "http://localhost:5049/api/Class";
+const BASE_URL = `http://localhost:${port}/api/Class`;
 
 // GET
 export const getClasses = async () => {
