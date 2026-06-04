@@ -26,5 +26,11 @@ namespace MyWebApiProject.Data
         public DbSet<HoursBookedHistory> HoursBookedHistory { get; set; }
         public DbSet<ScheduleHistory> SchedulesHistory { get; set; }
         public DbSet<TeacherToSubjectHistory> TeacherToSubjectsHistory { get; set; }
+
+        public DbSet<DaughtersTeacher> DaughtersTeachers { get; set; }
+        public DbSet<DaughtersTeacherHistory> DaughtersTeachersHistory { get; set; }
+
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<EmployeeHistory> EmployeesHistory { get; set; }
     }
 }

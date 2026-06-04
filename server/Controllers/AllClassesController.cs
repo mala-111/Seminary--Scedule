@@ -41,23 +41,7 @@ namespace MyWebApiProject.Controllers
             return CreatedAtAction(nameof(GetAllClasses), new { id = classEntity.AllClassesID }, classEntity);
         }
 
-        // DELETE: /manager/home/delete/class
-        // מחיקת כיתה
-        // [HttpDelete("delete/{id}")]
-        // public async Task<IActionResult> DeleteClass(Guid id)
-        // {
-        //     var cls = await _ScheduleContext.AllClasses.FindAsync(id);
-        //     if (cls == null) return NotFound();
-
-        //     _ScheduleContext.AllClasses.Remove(cls);
-        //     await _ScheduleContext.SaveChangesAsync();
-        //     return NoContent();
-        // }
-
-
-
-        // PUT: /manager/home/delete/class
-// העברת כיתה להיסטוריה במקום מחיקה
+        
 [HttpPut("delete/{id}")]
 public async Task<IActionResult> MoveClassToHistory(Guid id)
 {

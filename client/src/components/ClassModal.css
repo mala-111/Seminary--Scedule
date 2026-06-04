@@ -1,0 +1,17 @@
+.classes-list {
+  margin-top: 15px;
+  max-height: 250px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.class-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.class-item:last-child {
+  border-bottom: none;
+}

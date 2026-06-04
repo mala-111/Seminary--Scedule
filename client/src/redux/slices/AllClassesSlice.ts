@@ -1,7 +1,7 @@
 
 
 import {createSlice,createAsyncThunk, type PayloadAction, } from "@reduxjs/toolkit";
-import {getAllClasses,addAllClass,} from "../../api/allClassesApi";
+import {getAllClasses,addAllClass,deleteClass as deleteClassApi, } from "../../api/allClassesApi";
 import type{ AllClasses } from "../types/allClasses";
 
 interface AllClassesState {
@@ -54,7 +54,17 @@ export const createAllClass =
       }
     }
   );
-
+export const deleteClass = createAsyncThunk(
+  "classes/deleteClass",
+  async (id: string, thunkAPI) => {
+    try {
+      await deleteClassApi(id);
+      return id;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(err.message);
+    }
+  }
+);
 const allClassesSlice =
   createSlice({
     name: "allClasses",
@@ -79,6 +89,14 @@ const allClassesSlice =
           }
         )
 
+        .addCase(deleteClass.fulfilled, (state, action)=>{
+          state.allClasses=state.allClasses.filter(
+            (c)=>c.allClassesID!==action.payload
+          )
+        }
+
+        )
+        
         .addCase(
           createAllClass.fulfilled,
           (

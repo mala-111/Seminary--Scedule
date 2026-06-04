@@ -94,6 +94,97 @@ namespace MyWebApiProject.Migrations
                     b.ToTable("GradesHistory");
                 });
 
+            modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacher", b =>
+                {
+                    b.Property<Guid>("ClassDaughtersTeacherID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClassDaughtersTeacherID");
+
+                    b.HasIndex("TeacherID");
+
+                    b.ToTable("DaughtersTeachers");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacherHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ClassDaughtersTeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TeacherID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("DaughtersTeachersHistory");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.Employee", b =>
+                {
+                    b.Property<Guid>("EmployeeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("EmployeeId");
+
+                    b.ToTable("Employees");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.EmployeeHistory", b =>
+                {
+                    b.Property<Guid>("HistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EmployeeCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdateHistory")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("HistoryId");
+
+                    b.ToTable("EmployeesHistory");
+                });
+
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>
                 {
                     b.Property<Guid>("BookingID")
@@ -418,6 +509,17 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("HistoryId");
 
                     b.ToTable("TeacherToSubjectsHistory");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacher", b =>
+                {
+                    b.HasOne("MyWebApiProject.Models.Teacher", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>

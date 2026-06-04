@@ -6,6 +6,8 @@ import classReducer from "./slices/ClassSlice";
 import hoursBookedReducer from "./slices/HoursBookedSlice";
 import scheduleReducer from "./slices/ScheduleSlice";
 import teacherToSubjectReducer from "./slices/TeacherToSubjectSlice";
+import daughtersTeacherReducer from "./slices/daughtersTeacherSlice";
+import employeeReducer from "./slices/EmployeeSlice";
 export const store = configureStore({
   reducer: {
     teachers: teacherReducer,
@@ -16,6 +18,10 @@ export const store = configureStore({
     teacherToSubject:
     teacherToSubjectReducer,
     schedule: scheduleReducer,
+    daughtersTeacher: daughtersTeacherReducer,
+    employees: employeeReducer,
+    
+    
     
   },
 });

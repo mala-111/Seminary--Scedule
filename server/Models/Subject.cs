@@ -8,7 +8,7 @@ public class Subject
 
     [Required]
     public string Name { get; set; }="";
-
+     [Required]
     public string Category { get; set; } = "";
 
     // קשר N:M למורים

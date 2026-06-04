@@ -1,139 +1,80 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import SubjectModal from "../components/SubjectModal";
+import EmployeeModal from "../components/EmployeeModal";
+import ClassModal from "../components/ClassModal";
+import GradeModal from "../components/GradeModal";
 
-import "./FormAdmin.css";
 
-import {
-  fetchSubjects,
-  createSubject,
-  deleteSubject,
-} from "../redux/slices/SubjectSlice";
 
-import {
-  useAppDispatch,
-  useAppSelector,
-} from "../redux/hooks";
+export default function AdminPage() {
+  const [subjectModalOpen, setSubjectModalOpen] = useState(false);
+  const [employeeModalOpen, setEmployeeModalOpen] = useState(false);
+    const [classModalOpen, setclassModalOpen] = useState(false);
+        const [gradeModalOpen, setgradeModalOpen] = useState(false);
 
-const SubjectAdmin = () => {
-  const dispatch = useAppDispatch();
 
-  const { subjects } = useAppSelector(
-    (state) => state.subject
-  );
-
-  const [name, setName] = useState("");
-  const [deleteName, setDeleteName] = useState("");
-
-  const [category, setCategory] =
-    useState("חול");
-
-  useEffect(() => {
-    dispatch(fetchSubjects());
-  }, [dispatch]);
-const filteredSubjects = subjects.filter(
-  (s) =>
-    s.name
-      .toLowerCase()
-      .includes(deleteName.toLowerCase())
-);
-  const handleAdd = async () => {
-    if (!name.trim()) return;
-
-    await dispatch(
-      createSubject({
-        name,
-        category,
-      })
-    );
-
-    setName("");
-  };
-
-  const handleDelete = async (
-    name: string
-  ) => {
-    await dispatch(deleteSubject(name));
-  };
 
   return (
-    <div className="subject-admin">
-      <h2>ניהול מקצועות</h2>
+    <div style={{ padding: "20px" }}>
+      <h1>דף ניהול</h1>
 
-      <input
-        value={name}
-        onChange={(e) =>
-          setName(e.target.value)
-        }
-        placeholder="שם מקצוע"
-      />
-
-      <h3>קטגוריה</h3>
-
-      <select
-        value={category}
-        onChange={(e) =>
-          setCategory(e.target.value)
-        }
+      {/* כפתור לפתיחת ניהול מקצועות */}
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setSubjectModalOpen(true)}
       >
-        <option value="קודש">
-          קודש
-        </option>
-
-        <option value="חול">
-          חול
-        </option>
-
-        <option value="הקבצות">
-          הקבצות
-        </option>
-      </select>
-
-      <button onClick={handleAdd}>
-        הוסף מקצוע
+        ניהול מקצועות
       </button>
 
-      <hr />
-
-     <h3>מחיקת מקצוע</h3>
-
-<input
-  type="text"
-  placeholder="הקלידי שם מקצוע"
-  value={deleteName}
-  onChange={(e) =>
-    setDeleteName(e.target.value)
-  }
-/>
-
-{deleteName && (
-  <div className="suggestions">
-    {filteredSubjects.map((subject) => (
-      <div
-        key={subject.subjectID}
-        className="suggestion-item"
-        onClick={() =>
-          setDeleteName(subject.name)
-        }
+      {/* כפתור לפתיחת ניהול עובדים */}
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setEmployeeModalOpen(true)}
       >
-        {subject.name}
-      </div>
-    ))}
-  </div>
-)}
+        ניהול עובדים
+      </button>
 
-<button
-  className="delete-btn"
-  onClick={() => {
-    if (!deleteName.trim()) return;
+      {/* כפתור לפתיחת ניהול כיתות */}
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() =>setclassModalOpen (true)}
+      >
+        ניהול כיתות
+      </button>
 
-    dispatch(deleteSubject(deleteName));
 
-    setDeleteName("");
-  }}
->
-  מחק מקצוע
-</button>
+      {/* כפתור לפתיחת ניהול מחזורים */}
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() =>setgradeModalOpen (true)}
+      >
+        ניהול מחזורים
+      </button>
+     
+      {/* קומפוננטת Modal לניהול מקצועות */}
+      <SubjectModal
+        open={subjectModalOpen}
+        onClose={() => setSubjectModalOpen(false)}
+      />
+
+      {/* קומפוננטת Modal לניהול עובדים */}
+      <EmployeeModal
+        open={employeeModalOpen}
+        onClose={() => setEmployeeModalOpen(false)}
+      />
+
+
+      {/* קומפוננטת Modal לניהול כיתות */}
+      <ClassModal
+        open={classModalOpen}
+        onClose={() => setclassModalOpen(false)}
+      />
+
+      {/* קומפוננטת Modal לניהול מחזורים */}
+      <GradeModal
+        open={gradeModalOpen}
+        onClose={() => setgradeModalOpen(false)}
+      />
     </div>
   );
-};
-
-export default SubjectAdmin;
+}

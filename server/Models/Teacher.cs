@@ -15,15 +15,19 @@ public class Teacher
 
     [Required]
     public string Name { get; set; }="";
-
+    [Required]
     public int WeeklyHours { get; set; }
+     [Required]
        public bool IsClassTeacher { get; set; }
+        [Required]
     public bool IsGroupingTeacher { get; set; }
 
- 
+  [Required]
     public string PreferredDayOffA{ get; set; }="";
+     [Required]
 
     public string PreferredDayOffB{ get; set; }="";
+     [Required]
     public string PreferredDayOffC{ get; set; }="";
     
 

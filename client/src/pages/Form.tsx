@@ -7,10 +7,13 @@ import ProfessionModal from "../components/ProfessionModal";
 import ScheduleModal from "../components/ScheduleModal";
 import DayOff from "../components/DayOff";
 
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector  } from "../redux/hooks";
 import { createTeacher } from "../redux/slices/TeacherSlice";
 import { addHoursBooked } from "../api/hoursBookedApi";
 import { assignTeacherToSubject } from "../api/teacherToSubjectApi";
+import { addDaughtersTeacher } from "../api/DaughtersTeacherApi";
+import { fetchAllClasses } from "../redux/slices/AllClassesSlice";
+
 
 // ----------------------------
 // TYPES
@@ -40,12 +43,20 @@ const navigate = useNavigate();
 
 const dispatch = useAppDispatch();
 
+const { allClasses } = useAppSelector(
+  (state) => state.allClasses
+);
+
 const state = location.state as
   | {
       username: string;
       password: string;
     }
   | undefined;
+
+useEffect(() => {
+  dispatch(fetchAllClasses());
+}, [dispatch]);
 
 useEffect(() => {
   if (!state) {
@@ -240,6 +251,13 @@ const password = state?.password || "";
         
         })
       ).unwrap();
+      // שמירת כיתות הבנות
+for (const className of classes) {
+  await addDaughtersTeacher({
+    teacherID: createdTeacher.teacherID,
+    className,
+  });
+}
 
       if (formData.professions) {
 
@@ -341,32 +359,44 @@ const password = state?.password || "";
   // CLASSES
   // ----------------------------
 
-  const handleClassKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
+ const handleClassKeyDown = (
+  e: React.KeyboardEvent<HTMLInputElement>
+) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
 
-      const value = currentClass.trim();
+    const value = currentClass.trim();
 
-      const classRegex =
-        /^[A-Za-zא-ת]{1,2}[0-9]{1,2}$/;
+    const classRegex =
+      /^[A-Za-zא-ת]{1,2}[0-9]{1,2}$/;
 
-      if (!classRegex.test(value)) {
-        alert(
-          "כיתה לא תקינה. יש להזין 1-2 אותיות ולאחריהן 1-2 ספרות ללא רווחים"
-        );
-
-        return;
-      }
-
-      if (!classes.includes(value)) {
-        setClasses((prev) => [...prev, value]);
-      }
-
-      setCurrentClass("");
+    if (!classRegex.test(value)) {
+      alert(
+        "כיתה לא תקינה. יש להזין 1-2 אותיות ולאחריהן 1-2 ספרות ללא רווחים"
+      );
+      return;
     }
-  };
+
+    const existsInSystem = allClasses.some(
+      (c) =>
+        c.className.trim().toLowerCase() ===
+        value.toLowerCase()
+    );
+
+    if (!existsInSystem) {
+      alert("הכיתה אינה קיימת במערכת");
+      return;
+    }
+
+    if (classes.includes(value)) {
+      alert("הכיתה כבר נוספה");
+      return;
+    }
+
+    setClasses((prev) => [...prev, value]);
+    setCurrentClass("");
+  }
+};
 
   // ----------------------------
   // JSX
@@ -601,17 +631,7 @@ const password = state?.password || "";
             )}
           </div>
 
-          {/* שמירה */}
-
-          <div className="button-with-text">
-            <motion.button
-              whileHover={{ scale: 1.06 }}
-              onClick={handleSave}
-              disabled={formData.saved}
-            >
-              שמירת פרטים
-            </motion.button>
-          </div>
+         
 
           {/* כיתות */}
 
@@ -660,6 +680,18 @@ const password = state?.password || "";
                 ))}
               </div>
             )}
+          </div>
+
+           {/* שמירה */}
+
+          <div className="button-with-text">
+            <motion.button
+              whileHover={{ scale: 1.06 }}
+              onClick={handleSave}
+              disabled={formData.saved}
+            >
+              שמירת פרטים
+            </motion.button>
           </div>
         </div>
       </motion.div>

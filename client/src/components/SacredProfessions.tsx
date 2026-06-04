@@ -60,7 +60,7 @@ useEffect(() => {
               ))}
               {search && filteredList.length === 0 && <p className="no-results">לא נמצאו מקצועות</p>}
             </div>
-            <button onClick={onClose} className="close-btn">חזרה</button>
+            <button onClick={onClose} className="back-btn">חזרה</button>
           </>
         ) : (
           <GroupMarking
