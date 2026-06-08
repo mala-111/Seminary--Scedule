@@ -3,11 +3,10 @@
 import axios from "axios";
 import type{ Schedule } from "../redux/types/schedule";
 
-const port = import.meta.env.VITE_API_PORT
 
 
 const BASE_URL =
-  `https://localhost:${port}/api/Schedule`;
+  `/api/Schedule`;
 
 // GET
 export const getSchedules =

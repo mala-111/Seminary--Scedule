@@ -100,16 +100,15 @@ namespace MyWebApiProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ClassName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TeacherID")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ClassDaughtersTeacherID");
 
-                    b.HasIndex("TeacherID");
+                    b.HasIndex("AllClassesID");
 
                     b.ToTable("DaughtersTeachers");
                 });
@@ -513,13 +512,13 @@ namespace MyWebApiProject.Migrations
 
             modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacher", b =>
                 {
-                    b.HasOne("MyWebApiProject.Models.Teacher", "Teacher")
+                    b.HasOne("MyWebApiProject.Models.AllClasses", "AllClasses")
                         .WithMany()
-                        .HasForeignKey("TeacherID")
+                        .HasForeignKey("AllClassesID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Teacher");
+                    b.Navigation("AllClasses");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.HoursBooked", b =>

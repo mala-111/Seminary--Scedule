@@ -3,3 +3,6 @@ export interface AllClasses {
 
   className: string;
 }
+export interface CreateAllClass {
+  className: string;
+}

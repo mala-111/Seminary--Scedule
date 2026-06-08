@@ -2,10 +2,9 @@ import axios from "axios";
 import type { Subject } from "../redux/types/subject";
 
 
-const port = import.meta.env.VITE_API_PORT
 
 const BASE_URL =
-  `http://localhost:${port}/api/Subject`;
+  `/api/Subject`;
 
 export const getSubjects = async () => {
   const response = await axios.get(

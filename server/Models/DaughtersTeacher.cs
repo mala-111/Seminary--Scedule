@@ -11,8 +11,9 @@ public class DaughtersTeacher
     public Guid TeacherID { get; set; }
 
     [Required]
-    public string ClassName { get; set; }="";
-    public Teacher? Teacher { get; set; }
+    [ForeignKey(nameof(AllClasses))]
+        public Guid AllClassesID { get; set; }
+    public AllClasses? AllClasses { get; set; }
 }
 public class DaughtersTeacherDTO
     {

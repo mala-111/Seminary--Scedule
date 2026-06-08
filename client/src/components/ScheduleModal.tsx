@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./ScheduleModal.css";
 
 interface ScheduleModalProps {
@@ -11,7 +11,7 @@ interface ScheduleModalProps {
 const days = ["ראשון", "שני", "שלישי", "רביעי", "חמישי"];
 const hoursList = Array.from({ length: 8 }, (_, i) => `${8 + i}:00`);
 
-const ScheduleModal = ({ open, onClose, username, addSchedule }: ScheduleModalProps) => {
+const ScheduleModal = ({ open, onClose, addSchedule }: ScheduleModalProps) => {
   const [branch, setBranch] = useState("");
   const [hoursByDay, setHoursByDay] = useState<{ [day: string]: string[] }>({});
 

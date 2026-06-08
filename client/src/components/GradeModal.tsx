@@ -69,7 +69,19 @@ const GradeModal = ({ open, onClose }: GradeModalProps) => {
         </button>
 
         <h2>ניהול מחזורים</h2>
-
+        {/* הצגת כל המחזורים */}
+        <div className="section">
+          <button onClick={() => setShowAll(!showAll)}>
+            {showAll ? "הסתר את כל המחזורים" : "הצג את כל המחזורים"}
+          </button>
+          {showAll && (
+            <ul className="all-items-list">
+              {classes.map((g) => (
+                <li key={g.classID}>{g.name}</li>
+              ))}
+            </ul>
+          )}
+        </div>
         {/* הוספה */}
         <div className="section">
           <input
@@ -107,19 +119,7 @@ const GradeModal = ({ open, onClose }: GradeModalProps) => {
           <button onClick={() => handleDelete(deleteName)}>מחק מחזור</button>
         </div>
 
-        {/* הצגת כל המחזורים */}
-        <div className="section">
-          <button onClick={() => setShowAll(!showAll)}>
-            {showAll ? "הסתר את כל המחזורים" : "הצג את כל המחזורים"}
-          </button>
-          {showAll && (
-            <ul className="all-items-list">
-              {classes.map((g) => (
-                <li key={g.classID}>{g.name}</li>
-              ))}
-            </ul>
-          )}
-        </div>
+        
       </div>
     </div>
   );

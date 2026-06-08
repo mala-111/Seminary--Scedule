@@ -31,7 +31,10 @@ interface Schedule {
   branch: string;
   hoursByDay: { [day: string]: string[] };
 }
-
+interface SelectedClass {
+  id: string;
+  name: string;
+}
 // ----------------------------
 
 const STORAGE_KEY = "saved_user_data";
@@ -104,8 +107,7 @@ const password = state?.password || "";
   // CLASSES
   // ----------------------------
 
-  const [classes, setClasses] = useState<string[]>([]);
-
+const [classes, setClasses] = useState<SelectedClass[]>([]);
   const [currentClass, setCurrentClass] = useState<string>("");
 
   // ----------------------------
@@ -252,10 +254,10 @@ const password = state?.password || "";
         })
       ).unwrap();
       // שמירת כיתות הבנות
-for (const className of classes) {
+for (const cls of classes) {
   await addDaughtersTeacher({
     teacherID: createdTeacher.teacherID,
-    className,
+    allClassesID: cls.id,
   });
 }
 
@@ -359,16 +361,13 @@ for (const className of classes) {
   // CLASSES
   // ----------------------------
 
- const handleClassKeyDown = (
-  e: React.KeyboardEvent<HTMLInputElement>
-) => {
+const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
   if (e.key === "Enter") {
     e.preventDefault();
 
     const value = currentClass.trim();
 
-    const classRegex =
-      /^[A-Za-zא-ת]{1,2}[0-9]{1,2}$/;
+    const classRegex = /^[A-Za-zא-ת]{1,2}[0-9]{1,2}$/;
 
     if (!classRegex.test(value)) {
       alert(
@@ -377,23 +376,33 @@ for (const className of classes) {
       return;
     }
 
-    const existsInSystem = allClasses.some(
-      (c) =>
-        c.className.trim().toLowerCase() ===
-        value.toLowerCase()
+    const foundClass = allClasses.find(
+      c => c.className.trim().toLowerCase() === value.toLowerCase()
     );
 
-    if (!existsInSystem) {
+    if (!foundClass) {
       alert("הכיתה אינה קיימת במערכת");
       return;
     }
 
-    if (classes.includes(value)) {
+    // בדיקה לפני השימוש ב-id
+    const classId = foundClass.allClassesID;
+    if (!classId) {
+      alert("לכיתה אין מזהה, לא ניתן להוסיף");
+      return;
+    }
+
+    if (classes.some(c => c.id === classId)) {
       alert("הכיתה כבר נוספה");
       return;
     }
 
-    setClasses((prev) => [...prev, value]);
+    // כעת TypeScript מרוצה כי classId לעולם לא undefined
+    setClasses(prev => [
+      ...prev,
+      { id: classId, name: foundClass.className }
+    ]);
+
     setCurrentClass("");
   }
 };
@@ -659,7 +668,7 @@ for (const className of classes) {
                     key={idx}
                     className="class-tag"
                   >
-                    <span>{c}</span>
+                    <span>{c.name}</span>
 
                     {!formData.saved && (
                       <button

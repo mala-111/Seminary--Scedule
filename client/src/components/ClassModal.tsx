@@ -40,6 +40,7 @@ const ClassModal = ({ open, onClose }: ClassModalProps) => {
 
   await dispatch(
     createAllClass({
+      
       className: name,
     })
   );
@@ -55,7 +56,7 @@ const ClassModal = ({ open, onClose }: ClassModalProps) => {
         ClassName.trim().toLowerCase()
     );
 
-    if (!exists) {
+    if (!exists || !exists.allClassesID) {
       alert("כיתה לא קיימת");
       return;
     }

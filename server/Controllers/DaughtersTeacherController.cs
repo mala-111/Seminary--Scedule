@@ -18,9 +18,9 @@ namespace MyWebApiProject.Controllers
 
         // POST: api/DaughtersTeacher/new
         [HttpPost("new")]
-        public async Task<ActionResult<DaughtersTeacher>> CreateDaughtersTeacher(DaughtersTeacherDTO dto)
+        public async Task<ActionResult<DaughtersTeacher>> CreateDaughtersTeacher(DaughtersTeacher dto)
         {
-            if (dto == null || dto.TeacherID == Guid.Empty || string.IsNullOrEmpty(dto.ClassName))
+            if (dto == null || dto.TeacherID == Guid.Empty ||  dto.AllClassesID == Guid.Empty)
             {
                 return BadRequest("Invalid data.");
             }
@@ -28,7 +28,7 @@ namespace MyWebApiProject.Controllers
             var daughterTeacher = new DaughtersTeacher
             {
                 TeacherID = dto.TeacherID,
-                ClassName = dto.ClassName
+                AllClassesID = dto.AllClassesID
             };
 
             _context.DaughtersTeachers.Add(daughterTeacher);
@@ -50,7 +50,7 @@ namespace MyWebApiProject.Controllers
             {
                 ClassDaughtersTeacherID = entity.ClassDaughtersTeacherID,
                 TeacherID = entity.TeacherID,
-                ClassName = entity.ClassName,
+                AllClassesID = entity.AllClassesID,
                 UpdateHistory = DateTime.UtcNow
             };
 
@@ -66,7 +66,7 @@ namespace MyWebApiProject.Controllers
         public async Task<ActionResult<List<DaughtersTeacher>>> GetAll()
         {
             return await _context.DaughtersTeachers
-                .Include(d => d.Teacher) // אם רוצים גם את פרטי המורה
+                .Include(d => d.TeacherID) // אם רוצים גם את פרטי המורה
                 .ToListAsync();
         }
     }

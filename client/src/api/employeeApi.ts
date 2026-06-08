@@ -1,9 +1,11 @@
 import axios from "axios";
 import type { Employee } from "../redux/types/employee";
 
-const port = import.meta.env.VITE_API_PORT
 const API_URL =
-  `http://localhost:${port}/api/Employee`;
+  `/api/Employee`;
+
+  console.log("API_URL:", import.meta.env.VITE_API_URL);
+console.log("FULL URL:", `${API_URL}/all`);
 
 export const getEmployees =
   async (): Promise<Employee[]> => {

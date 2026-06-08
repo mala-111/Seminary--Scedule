@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import type { DaughtersTeacher } from "../types/DaughtersTeacher";
+import type { DaughtersTeacher } from "../types/daughtersTeacher";
 import { getDaughtersTeachers, addDaughtersTeacher, removeDaughtersTeacher } from "../../api/DaughtersTeacherApi";
 
 interface DaughtersTeacherState {

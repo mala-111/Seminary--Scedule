@@ -1,9 +1,9 @@
 import axios from "axios";
-import type { DaughtersTeacher } from "../redux/types/DaughtersTeacher";
+import type { DaughtersTeacher } from "../redux/types/daughtersTeacher";
 
-const port = import.meta.env.VITE_API_PORT
 
-const API_URL = `http://localhost:${port}/api/DaughtersTeacher`;
+
+const API_URL = `/api/DaughtersTeacher`;
 
 // GET כל הכיתות של מורה מסוים
 export const getDaughtersTeachers = async (teacherID: string): Promise<DaughtersTeacher[]> => {

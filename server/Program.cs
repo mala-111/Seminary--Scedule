@@ -3,19 +3,32 @@ using MyWebApiProject.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
+// ====================
+// Configure DB Context
+// ====================
 builder.Services.AddDbContext<ScheduleContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Controllers
+// ====================
+// Add Controllers
+// ====================
 builder.Services.AddControllers();
 
-// Swagger
+// ====================
+// Swagger / OpenAPI
+// ====================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
-// CORS (חובה ל-React)
+// ====================
+// Set URL for Docker
+// ====================
+builder.WebHost.UseUrls("http://0.0.0.0:8080");
+
+// ====================
+// CORS for React
+// ====================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -27,35 +40,65 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// ====================
+// Root Endpoint
+// ====================
 app.MapGet("/", () => "API is alive");
 
-// Swagger רק בפיתוח
+// ====================
+// Swagger only in Development
+// ====================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
-        c.RoutePrefix = string.Empty;
+        c.RoutePrefix = "swagger";
     });
 }
 
-// CORS לפני הכל
+// ====================
+// Middleware
+// ====================
 app.UseRouting();
-
 app.UseCors("AllowAll");
-
 app.UseAuthorization();
 
-// ❗ בפיתוח אפשר להשאיר כבוי כדי למנוע בעיות HTTPS מול React
-// app.UseHttpsRedirection();
-
+// ====================
+// Map Controllers
+// ====================
 app.MapControllers();
+
+
+// ====================
+// Apply Migrations + Seed Data
+// ====================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ScheduleContext>();
 
-    SeedData.SeedSubjects(db);
-    SeedData.SeedGrades(db);
+    try
+    {
+        // רק מריץ מיגרציות קיימות
+        db.Database.Migrate();
+
+        // Seed רק אם אין נתונים
+        if (!db.Subjects.Any())
+            SeedData.SeedSubjects(db);
+
+        if (!db.Grades.Any())
+            SeedData.SeedGrades(db);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"❌ DB init failed: {ex.Message}");
+        throw; // עוצר אם משהו משתבש
+    }
 }
+
+// ====================
+// Run the App
+// ====================
 app.Run();

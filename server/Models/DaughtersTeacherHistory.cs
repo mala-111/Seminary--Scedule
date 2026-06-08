@@ -11,11 +11,10 @@ public class DaughtersTeacherHistory
     
     public Guid TeacherID { get; set; }
 
-   
+    public Guid AllClassesID { get; set; }
     public string ClassName { get; set; }="";
      public DateTime UpdateHistory{get; set;}
-     public Guid AllClassesID { get; set; } 
-
+     
 }
 
 }

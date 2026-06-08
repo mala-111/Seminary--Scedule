@@ -8,6 +8,8 @@ import scheduleReducer from "./slices/ScheduleSlice";
 import teacherToSubjectReducer from "./slices/TeacherToSubjectSlice";
 import daughtersTeacherReducer from "./slices/daughtersTeacherSlice";
 import employeeReducer from "./slices/EmployeeSlice";
+import adminReducer from "./slices/AdminSlice"; // הנתיב לסלייס שלך
+
 export const store = configureStore({
   reducer: {
     teachers: teacherReducer,
@@ -20,6 +22,7 @@ export const store = configureStore({
     schedule: scheduleReducer,
     daughtersTeacher: daughtersTeacherReducer,
     employees: employeeReducer,
+    admins: adminReducer
     
     
     

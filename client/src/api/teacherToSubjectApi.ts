@@ -4,11 +4,10 @@ import axios from "axios";
 
 import type{ TeacherToSubject } from "../redux/types/teacherToSubject";
 
-const port = import.meta.env.VITE_API_PORT
 
 
 const BASE_URL =
-  `https://localhost:${port}/api/TeacherToSubject`;
+  `/api/TeacherToSubject`;
 
 export const getTeacherToSubjects =
   async () => {
@@ -39,7 +38,7 @@ export const addTeacherToSubject =
   }) => {
 
     const response = await axios.post(
-      "http://localhost:5049/api/TeacherToSubject/assignByNames",
+      "/api/TeacherToSubject/assignByNames",
       data
     );
 

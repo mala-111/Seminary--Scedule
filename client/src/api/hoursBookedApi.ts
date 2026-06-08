@@ -3,11 +3,10 @@ import axios from "axios";
 
 import type{ HoursBooked } from "../redux/types/hoursBooked";
 
-const port = import.meta.env.VITE_API_PORT
 
 
 const BASE_URL =
-  `http://localhost:${port}/api/HoursBooked`;
+  `/api/HoursBooked`;
 
 export const getHoursBooked = async (
   teacherId: string

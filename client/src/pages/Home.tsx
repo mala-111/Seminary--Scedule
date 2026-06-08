@@ -5,6 +5,12 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { fetchEmployees } from "../redux/slices/EmployeeSlice";
 import "./Home.css";
 
+// הוספנו ממשק ל-recent users
+interface RecentUser {
+  employeeId: string;
+  name: string;
+}
+
 const Home = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,19 +25,15 @@ const Home = () => {
   }, [dispatch]);
 
   // סינון שמות עובדים להצעות
-  const recentUsers: {
-    employeeId: string;
-    name: string;
-  }[] = JSON.parse(
+  const recentUsers: RecentUser[] = JSON.parse(
     localStorage.getItem("recentUsers") || "[]"
   );
 
-  const filteredEmployees = recentUsers.filter((u) =>
+  const filteredEmployees = recentUsers.filter((u: RecentUser) =>
     u.name.toLowerCase().includes(username.toLowerCase())
   );
 
   const handleLogin = () => {
-
     const cleanUsername = username.trim();
     const cleanPassword = password.trim();
 
@@ -41,46 +43,47 @@ const Home = () => {
     }
 
     // מנהל
-   // קבלת מנהלים מ-localStorage
-const admins: {username: string, password: string}[] = JSON.parse(
-  localStorage.getItem("admins") || '[]'
-);
+    // קבלת מנהלים מ-localStorage
+    const admins: {username: string, password: string}[] = JSON.parse(
+      localStorage.getItem("admins") || '[]'
+    );
 
-const admin = admins.find(
-  a => a.username.toLowerCase() === cleanUsername.toLowerCase()
-);
+    const admin = admins.find(
+      a => a.username.toLowerCase() === cleanUsername.toLowerCase()
+    );
 
-if (admin) {
-  // מנהל רשום
-  if (admin.password === cleanPassword) {
-    // שמירה ב-recentUsers
-    const recentUsers = JSON.parse(localStorage.getItem("recentUsers") || "[]");
-    const updatedUsers = [
-      { employeeId: "admin_" + admin.username, name: admin.username },
-      ...recentUsers.filter(u => u.employeeId !== "admin_" + admin.username)
-    ];
-    localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
+    if (admin) {
+      // מנהל רשום
+      if (admin.password === cleanPassword) {
+        // שמירה ב-recentUsers
+        const recentUsers: RecentUser[] = JSON.parse(localStorage.getItem("recentUsers") || "[]");
+        const updatedUsers: RecentUser[] = [
+          { employeeId: "admin_" + admin.username, name: admin.username },
+          ...recentUsers.filter((u: RecentUser) => u.employeeId !== "admin_" + admin.username)
+        ];
+        localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
 
-    navigate("/form-admin");
-    return;
-  } else {
-    alert("סיסמת מנהל שגויה");
-    return;
-  }
-}
+        navigate("/form-admin");
+        return;
+      } else {
+        alert("סיסמת מנהל שגויה");
+        return;
+      }
+    }
 
-// מקרה backward compatibility למנהל שלא שונה
-if (cleanUsername.toLowerCase() === "adminaration" && cleanPassword === "1234") {
-  const recentUsers = JSON.parse(localStorage.getItem("recentUsers") || "[]");
-  const updatedUsers = [
-    { employeeId: "admin_adminaration", name: "adminaration" },
-    ...recentUsers.filter(u => u.employeeId !== "admin_adminaration")
-  ];
-  localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
+    // מקרה backward compatibility למנהל שלא שונה
+    if (cleanUsername.toLowerCase() === "adminaration" && cleanPassword === "1234") {
+      const recentUsers: RecentUser[] = JSON.parse(localStorage.getItem("recentUsers") || "[]");
+      const updatedUsers: RecentUser[] = [
+        { employeeId: "admin_adminaration", name: "adminaration" },
+        ...recentUsers.filter((u: RecentUser) => u.employeeId !== "admin_adminaration")
+      ];
+      localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
 
-  navigate("/form-admin");
-  return;
-}
+      navigate("/form-admin");
+      return;
+    }
+
     // עובד
     const employee = employees.find(
       (e) => e.name.toLowerCase() === cleanUsername.toLowerCase()
@@ -95,24 +98,15 @@ if (cleanUsername.toLowerCase() === "adminaration" && cleanPassword === "1234") 
       alert("סיסמה שגויה");
       return;
     }
-    const recentUsers = JSON.parse(
-      localStorage.getItem("recentUsers") || "[]"
-    );
 
-    const updatedUsers = [
-      {
-        employeeId: employee.employeeId,
-        name: employee.name,
-      },
-      ...recentUsers.filter(
-        (u: any) => u.employeeId !== employee.employeeId
-      ),
+    const recentUsers: RecentUser[] = JSON.parse(localStorage.getItem("recentUsers") || "[]");
+
+    const updatedUsers: RecentUser[] = [
+      { employeeId: employee.employeeId, name: employee.name },
+      ...recentUsers.filter((u: RecentUser) => u.employeeId !== employee.employeeId)
     ];
 
-    localStorage.setItem(
-      "recentUsers",
-      JSON.stringify(updatedUsers.slice(0, 3))
-    );
+    localStorage.setItem("recentUsers", JSON.stringify(updatedUsers.slice(0, 3)));
 
     navigate("/form", {
       state: {
