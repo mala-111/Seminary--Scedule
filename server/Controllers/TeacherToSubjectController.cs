@@ -18,28 +18,44 @@ namespace MyWebApiProject.Controllers
 
         // POST: /manager/home/subjectToTeacher
         // שיוך מקצועות למורה
-        [HttpPost("subjectToTeacher")]
-        public async Task<ActionResult<TeacherToSubject>> AssignSubjectToTeacher(TeacherToSubject dto)
-        {
-            var entity = new TeacherToSubject
-            {
-                TeacherID = dto.TeacherID,
-                SubjectID = dto.SubjectID,
-                ClassID = dto.ClassID
-            };
+       [HttpPost("subjectToTeacher")]
+public async Task<ActionResult<TeacherToSubject>> AssignSubjectToTeacher(TeacherToSubjectDTO dto)
+{
+    var subject = await _ScheduleContext.Subjects
+        .FirstOrDefaultAsync(s => s.Name == dto.SubjectName);
 
-            _ScheduleContext.TeacherToSubjects.Add(entity);
-            await _ScheduleContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetAllAssignments), new { id = entity.TeacherToSubjectId }, entity);
-        }
+    if (subject == null)
+        return NotFound("Subject not found");
+
+    var cls = await _ScheduleContext.Grades
+        .FirstOrDefaultAsync(c => c.Name == dto.ClassName);
+
+    if (cls == null)
+        return NotFound("Class not found");
+
+    var entity = new TeacherToSubject
+    {
+        TeacherID = dto.TeacherID,
+        SubjectID = subject.SubjectID,
+        ClassID = cls.ClassID
+    };
+
+    _ScheduleContext.TeacherToSubjects.Add(entity);
+    await _ScheduleContext.SaveChangesAsync();
+
+    return CreatedAtAction(nameof(GetAllAssignments), new { id = entity.TeacherToSubjectId }, entity);
+}
 
         // GET: /manager/home/subjectToTeacher
         // צפיה בכל השיוכים
         [HttpGet("subjectToTeacher")]
-        public async Task<ActionResult<IEnumerable<TeacherToSubject>>> GetAllAssignments()
-        {
-            return await _ScheduleContext.TeacherToSubjects.ToListAsync();
-        }
+public async Task<ActionResult<IEnumerable<TeacherToSubject>>> GetAllAssignments()
+{
+    return await _ScheduleContext.TeacherToSubjects
+        .Include(t => t.Subject)
+        .Include(t => t.Class)
+        .ToListAsync();
+}
 
 
         [HttpPut("delete/teacherToSubject/{id}")]

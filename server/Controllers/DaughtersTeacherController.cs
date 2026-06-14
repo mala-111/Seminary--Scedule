@@ -63,11 +63,9 @@ namespace MyWebApiProject.Controllers
 
         // GET: api/DaughtersTeacher/all
         [HttpGet("all")]
-        public async Task<ActionResult<List<DaughtersTeacher>>> GetAll()
-        {
-            return await _context.DaughtersTeachers
-                .Include(d => d.TeacherID) // אם רוצים גם את פרטי המורה
-                .ToListAsync();
-        }
+public async Task<ActionResult<List<DaughtersTeacher>>> GetAll()
+{
+    return await _context.DaughtersTeachers.ToListAsync();
+}
     }
 }

@@ -100,6 +100,7 @@ const password = state?.password || "";
   const [dayOffOpen, setDayOffOpen] = useState(false);
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<string>("");
 
   const [dayOffPriorities, setDayOffPriorities] = useState<string[]>([]);
 
@@ -234,6 +235,7 @@ const [classes, setClasses] = useState<SelectedClass[]>([]);
           employeeCode: password,
 
           weeklyHours: Number(formData.hours),
+          className: formData.format === "כן" ? selectedClassId : "",
 
           preferredDayOffA:
             dayOffPriorities[0] || "",
@@ -490,7 +492,28 @@ const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
               <span className="selection-text-inline">
                 {formData.format}
               </span>
+
+              
             )}
+            {formData.format === "כן" && (
+  <div className="field">
+    <label>בחרי כיתה למחנכת</label>
+
+    <select
+      value={selectedClassId}
+      onChange={(e) => setSelectedClassId(e.target.value)}
+      disabled={formData.saved}
+    >
+      <option value="">בחרי כיתה</option>
+
+      {allClasses.map((c) => (
+        <option key={c.allClassesID} value={c.className}>
+          {c.className}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
           </div>
 
           {/* מורת הקבצה */}

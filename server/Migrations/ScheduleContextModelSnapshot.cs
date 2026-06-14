@@ -366,6 +366,10 @@ namespace MyWebApiProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("EmployeeCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -406,8 +410,9 @@ namespace MyWebApiProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ClassID")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("ClassName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmployeeCode")
                         .IsRequired()
@@ -435,9 +440,6 @@ namespace MyWebApiProject.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("SubjectID")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("TeacherID")
                         .HasColumnType("uniqueidentifier");
 
@@ -448,12 +450,6 @@ namespace MyWebApiProject.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("HistoryId");
-
-                    b.HasIndex("ClassID");
-
-                    b.HasIndex("SubjectID");
-
-                    b.HasIndex("TeacherID");
 
                     b.ToTable("TeachersHistory");
                 });
@@ -553,29 +549,6 @@ namespace MyWebApiProject.Migrations
                         .IsRequired();
 
                     b.Navigation("AllClasses");
-
-                    b.Navigation("Subject");
-
-                    b.Navigation("Teacher");
-                });
-
-            modelBuilder.Entity("MyWebApiProject.Models.TeacherHistory", b =>
-                {
-                    b.HasOne("MyWebApiProject.Models.Class", "Class")
-                        .WithMany()
-                        .HasForeignKey("ClassID");
-
-                    b.HasOne("MyWebApiProject.Models.Subject", "Subject")
-                        .WithMany()
-                        .HasForeignKey("SubjectID");
-
-                    b.HasOne("MyWebApiProject.Models.Teacher", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Class");
 
                     b.Navigation("Subject");
 

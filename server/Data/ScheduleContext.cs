@@ -32,5 +32,8 @@ namespace MyWebApiProject.Data
 
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeHistory> EmployeesHistory { get; set; }
+    
     }
+
+    
 }

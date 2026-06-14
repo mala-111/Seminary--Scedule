@@ -18,6 +18,7 @@ public class TeacherHistory
     public string Name { get; set; }="";
 
     public int WeeklyHours { get; set; }
+    public string ClassName { get; set; }="";
 
     public string PreferredDayOffA{ get; set; }="";
 
@@ -29,11 +30,7 @@ public class TeacherHistory
      public DateTime UpdateHistory{get; set;}
 
      // NAVIGATION
-        public Teacher? Teacher { get; set; }
-
-        public Subject? Subject { get; set; }
-
-        public Class? Class { get; set; }
+        
     // קשרים רבים-לרבים
    // public virtual ICollection<Subject> Subjects { get; set; } = new List<Subject>();
    // public virtual ICollection<Class> Classes { get; set; } = new List<Class>();

@@ -21,6 +21,9 @@ public class Teacher
        public bool IsClassTeacher { get; set; }
         [Required]
     public bool IsGroupingTeacher { get; set; }
+  [Required]
+    public string ClassName { get; set; }="";
+   
 
   [Required]
     public string PreferredDayOffA{ get; set; }="";
@@ -58,6 +61,10 @@ public class TeacherDTO
     public string PreferredDayOffC{ get; set; }="";
     public bool IsClassTeacher { get; set; }
     public bool IsGroupingTeacher { get; set; }
+
+    public string ClassName { get; set; } = "";
+
+    
 
     }
 }

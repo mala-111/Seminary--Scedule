@@ -19,19 +19,29 @@ namespace MyWebApiProject.Controllers
         // POST: /manager/home/schedule
         // יצירת מערכת שעות
         [HttpPost("schedule")]
-        public async Task<ActionResult<Schedule>> CreateSchedule(ScheduleDTO dto)
-        {
-            var schedule = new Schedule
-            {
-                Day = dto.Day,
-                Hour = dto.Hour
-                // TeacherID, SubjectID, AllClassesID יש למלא לפי המימוש האמיתי
-            };
+public async Task<ActionResult<Schedule>> CreateSchedule(ScheduleDTO dto)
+{
+    if (dto == null)
+        return BadRequest();
 
-            _ScheduleContext.Schedules.Add(schedule);
-            await _ScheduleContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetSchedules), new { id = schedule.ScheduleId }, schedule);
-        }
+    var schedule = new Schedule
+    {
+        Day = dto.Day,
+        Hour = dto.Hour,
+        TeacherID = dto.TeacherID,
+        SubjectID = dto.SubjectID,
+        AllClassesID = dto.AllClassesID
+    };
+
+    _ScheduleContext.Schedules.Add(schedule);
+    await _ScheduleContext.SaveChangesAsync();
+
+    return CreatedAtAction(
+        nameof(GetSchedules),
+        new { id = schedule.ScheduleId },
+        schedule
+    );
+}
 
         // GET: /employee/home/showSchedule/allPersonal
         // צפייה במערכת האישית
@@ -46,10 +56,17 @@ namespace MyWebApiProject.Controllers
         // GET: /employee/home/showSchedule/all
         // צפייה במערכת הכללית
         [HttpGet("showSchedule/all")]
-        public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules(int skip = 0, int take = 20)
-        {
-            return await _ScheduleContext.Schedules.Skip(skip).Take(take).ToListAsync();
-        }
+public async Task<ActionResult<IEnumerable<Schedule>>> GetSchedules(int skip = 0, int take = 20)
+{
+    if (skip < 0) skip = 0;
+    if (take <= 0 || take > 100) take = 20;
+
+    return await _ScheduleContext.Schedules
+        .OrderBy(s => s.ScheduleId)
+        .Skip(skip)
+        .Take(take)
+        .ToListAsync();
+}
 
         // DELETE: /manager/home/resetSchedule
         // איפוס המערכת
@@ -65,20 +82,19 @@ namespace MyWebApiProject.Controllers
 public async Task<IActionResult> MoveSchedulesToHistory()
 {
     var schedules = await _ScheduleContext.Schedules.ToListAsync();
-    foreach(var s in schedules)
-    {
-        var history = new ScheduleHistory
-        {
-            ScheduleId = s.ScheduleId,
-            TeacherID = s.TeacherID,
-            SubjectID = s.SubjectID,
-            AllClassesID = s.AllClassesID,
-            Day = s.Day,
-            Hour = s.Hour,
-            UpdateHistory = DateTime.UtcNow
-        };
-        _ScheduleContext.SchedulesHistory.Add(history);
-    }
+    
+    var histories = schedules.Select(s => new ScheduleHistory
+{
+    ScheduleId = s.ScheduleId,
+    TeacherID = s.TeacherID,
+    SubjectID = s.SubjectID,
+    AllClassesID = s.AllClassesID,
+    Day = s.Day,
+    Hour = s.Hour,
+    UpdateHistory = DateTime.UtcNow
+}).ToList();
+
+_ScheduleContext.SchedulesHistory.AddRange(histories);
 
     _ScheduleContext.Schedules.RemoveRange(schedules);
     await _ScheduleContext.SaveChangesAsync();

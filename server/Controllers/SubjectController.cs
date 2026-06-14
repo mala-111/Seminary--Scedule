@@ -26,7 +26,7 @@ namespace MyWebApiProject.Controllers
                 return BadRequest("שם מקצוע חובה.");
             }
 
-            if (_ScheduleContext.Subjects.Any(a => a.Name.ToUpper() == dto.Name.Trim().ToUpper()))
+            if (_ScheduleContext.Subjects.Any(a => a.Name.Trim().ToUpper() == dto.Name.Trim().ToUpper()))
             {
                 return Conflict("מקצוע זה כבר קיים.");
             }

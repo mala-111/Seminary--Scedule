@@ -74,7 +74,7 @@ public async Task<IActionResult> MoveBookedHoursToHistory(Guid id)
     _ScheduleContext.HoursBooked.Remove(booked);
 
     await _ScheduleContext.SaveChangesAsync();
-    return Ok(booked);
+    return Ok(new { message = "Moved", id = history.HistoryId });
 }
     }
 }

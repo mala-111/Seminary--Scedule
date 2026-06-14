@@ -79,8 +79,11 @@ const subjectSlice = createSlice({
 
   initialState,
 
-  reducers: {},
-
+ reducers: {
+  setSubjects: (state, action: PayloadAction<Subject[]>) => {
+    state.subjects = action.payload;
+  },
+},
   extraReducers: (builder) => {
     // FETCH
 
@@ -138,4 +141,5 @@ const subjectSlice = createSlice({
   },
 });
 
+export const { setSubjects } = subjectSlice.actions; // ✅ זה חשוב
 export default subjectSlice.reducer;

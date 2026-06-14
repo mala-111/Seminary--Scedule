@@ -1,0 +1,71 @@
+name: CI-CD Production
+
+on:
+  push:
+    branches: ["main","maly"]
+
+jobs:
+
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Test Server
+        run: |
+          dotnet restore Seminary--Scedule.sln
+          dotnet test Seminary--Scedule.sln
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test Client
+        run: |
+          cd client
+          npm ci
+          npm test -- --watchAll=false
+
+
+  build_push:
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build images
+        run: |
+          docker compose build
+
+      - name: Push images
+        run: |
+          docker compose push
+
+
+  deploy:
+    needs: build_push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/app   # או איפה שהפרויקט שלך בשרת
+            git pull       # אם אתה שומר שם repo
+            docker compose pull
+            docker compose up -d --remove-orphans

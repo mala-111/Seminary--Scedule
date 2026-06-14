@@ -8,6 +8,7 @@ export interface Teacher {
   preferredDayOffC: string;
   isClassTeacher: boolean;
   isGroupingTeacher: boolean;
+  className:string;
 
   
 }

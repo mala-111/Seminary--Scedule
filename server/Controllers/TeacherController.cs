@@ -4,6 +4,7 @@ using MyWebApiProject.Data;
 using MyWebApiProject.Models;
 
 namespace MyWebApiProject.Controllers
+
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -47,7 +48,8 @@ public async Task<ActionResult<Teacher>> GetTeacher(Guid id)
                 IsGroupingTeacher = dto.IsGroupingTeacher,
                 PreferredDayOffA = dto.PreferredDayOffA,
                 PreferredDayOffB = dto.PreferredDayOffB,
-                PreferredDayOffC = dto.PreferredDayOffC
+                PreferredDayOffC = dto.PreferredDayOffC,
+                ClassName = dto.ClassName,
             };
 
             _ScheduleContext.Teachers.Add(teacher);
@@ -84,6 +86,7 @@ public async Task<ActionResult<Teacher>> GetTeacher(Guid id)
 
             teacher.IsClassTeacher = dto.IsClassTeacher;
             teacher.IsGroupingTeacher = dto.IsGroupingTeacher;
+       
 
             await _ScheduleContext.SaveChangesAsync();
             return NoContent();
@@ -117,6 +120,7 @@ public async Task<IActionResult> MoveTeacherToHistory(Guid id)
         PreferredDayOffA = teacher.PreferredDayOffA,
                 PreferredDayOffB = teacher.PreferredDayOffB,
         PreferredDayOffC = teacher.PreferredDayOffC,
+        ClassName = teacher.ClassName,
 
         IsClassTeacher = teacher.IsClassTeacher,
         IsGroupingTeacher = teacher.IsGroupingTeacher,

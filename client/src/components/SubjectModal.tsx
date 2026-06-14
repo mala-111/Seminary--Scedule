@@ -70,6 +70,7 @@ const SubjectModal = ({ open, onClose }: SubjectModalProps) => {
   if (!open) return null;
 
   return (
+   
     <div className="modal-overlay">
       <div className="modal-content">
         <button className="close-btn" onClick={onClose}>X</button>
@@ -95,6 +96,14 @@ const SubjectModal = ({ open, onClose }: SubjectModalProps) => {
     )}
   </div>
 )}
+{/* 🔵 הוספה: הצגת subjects מהסטור */}
+<div className="subjects-list">
+  {subjects.map((s, index) => (
+    <div key={index}>
+      {s.name}
+    </div>
+  ))}
+</div>
         {/* הוספה */}
         <div className="section">
           <input
