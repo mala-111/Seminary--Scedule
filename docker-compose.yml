@@ -1,15 +1,16 @@
 services:
 
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sql-server-2022-new
+    image: postgres:16
+    container_name: pg-db
     environment:
-      ACCEPT_EULA: "Y"
-      SA_PASSWORD: "SeminarySchedule123!"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ScheduleDb
     ports:
-      - "1434:1433"
+    - "5432:5432"
     volumes:
-      - sql_data:/var/opt/mssql
+    - sql_data:/var/lib/postgresql/data
 
   server:
     image: yourdockerhubusername/server:latest
@@ -21,7 +22,7 @@ services:
       - sqlserver
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ScheduleDb;User Id=SA;Password=SeminarySchedule123!;TrustServerCertificate=true;"
+      ConnectionStrings__DefaultConnection: Host=pg-db;Port=5432;Database=ScheduleDb;Username=postgres;Password=1234
     ports:
       - "8080:8080"
 

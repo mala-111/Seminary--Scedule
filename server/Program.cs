@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MyWebApiProject.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure DB Context
 // ====================
 builder.Services.AddDbContext<ScheduleContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ====================
 // Add Controllers
@@ -82,7 +84,18 @@ using (var scope = app.Services.CreateScope())
     try
     {
         // רק מריץ מיגרציות קיימות
+        for (int i = 0; i < 10; i++)
+{
+    try
+    {
         db.Database.Migrate();
+        break;
+    }
+    catch
+    {
+        Thread.Sleep(3000);
+    }
+}
 
         // Seed רק אם אין נתונים
         if (!db.Subjects.Any())
