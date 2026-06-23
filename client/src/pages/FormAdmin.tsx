@@ -1,9 +1,13 @@
 import { useState } from "react";
+
 import SubjectModal from "../components/SubjectModal";
 import EmployeeModal from "../components/EmployeeModal";
 import ClassModal from "../components/ClassModal";
 import GradeModal from "../components/GradeModal";
 import AdminSettingsModal from "../components/AdminSettingsModal";
+
+import SchoolSettingsModal from "../components/SchoolSettingsModal";
+import ClassSubjectRequirementModal from "../components/ClassSubjectRequirementModal";
 
 export default function AdminPage() {
   const [subjectModalOpen, setSubjectModalOpen] = useState(false);
@@ -12,27 +16,58 @@ export default function AdminPage() {
   const [gradeModalOpen, setGradeModalOpen] = useState(false);
   const [adminSettingsOpen, setAdminSettingsOpen] = useState(false);
 
+  // NEW
+  const [schoolSettingsOpen, setSchoolSettingsOpen] = useState(false);
+  const [requirementsOpen, setRequirementsOpen] = useState(false);
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>דף ניהול</h1>
 
-      <button style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setSubjectModalOpen(true)}>
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setSubjectModalOpen(true)}
+      >
         ניהול מקצועות
       </button>
 
-      <button style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setEmployeeModalOpen(true)}>
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setEmployeeModalOpen(true)}
+      >
         ניהול עובדים
       </button>
 
-      <button style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setClassModalOpen(true)}>
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setClassModalOpen(true)}
+      >
         ניהול כיתות
       </button>
 
-      <button style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }} onClick={() => setGradeModalOpen(true)}>
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setGradeModalOpen(true)}
+      >
         ניהול מחזורים
       </button>
 
-      {/* כפתור חדש למנהל – שינוי סיסמה והוספת מנהל */}
+      {/* NEW BUTTONS */}
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setSchoolSettingsOpen(true)}
+      >
+        הגדרות מערכת שעות
+      </button>
+
+      <button
+        style={{ margin: "10px", padding: "10px 20px", fontSize: "16px" }}
+        onClick={() => setRequirementsOpen(true)}
+      >
+        דרישות מקצועות לכיתות
+      </button>
+
+      {/* Admin */}
       <div style={{ marginTop: "50px", textAlign: "right" }}>
         <button
           style={{ padding: "10px 20px", fontSize: "16px" }}
@@ -42,14 +77,23 @@ export default function AdminPage() {
         </button>
       </div>
 
-      {/* קומפוננטות Modal */}
+      {/* Modals קיימים */}
       <SubjectModal open={subjectModalOpen} onClose={() => setSubjectModalOpen(false)} />
       <EmployeeModal open={employeeModalOpen} onClose={() => setEmployeeModalOpen(false)} />
       <ClassModal open={classModalOpen} onClose={() => setClassModalOpen(false)} />
       <GradeModal open={gradeModalOpen} onClose={() => setGradeModalOpen(false)} />
-
-      {/* Modal מנהלים */}
       <AdminSettingsModal open={adminSettingsOpen} onClose={() => setAdminSettingsOpen(false)} />
+
+      {/* NEW MODALS */}
+      <SchoolSettingsModal
+        open={schoolSettingsOpen}
+        onClose={() => setSchoolSettingsOpen(false)}
+      />
+
+      <ClassSubjectRequirementModal
+        open={requirementsOpen}
+        onClose={() => setRequirementsOpen(false)}
+      />
     </div>
   );
 }

@@ -7,7 +7,7 @@ export interface Schedule {
 
   allClassesID: string;
 
-  day: string;
+  day: number;
 
-  hour: string;
+  hour: number;
 }

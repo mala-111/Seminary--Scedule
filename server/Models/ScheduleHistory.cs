@@ -21,10 +21,10 @@ namespace MyWebApiProject.Models
 
         // public Teacher teacher {get; set;}
         [Required]
-        public string Day  {get;  set;}="";
+        public int Day  {get;  set;}
         [Required]
 
-        public string Hour  {get; set; }="";
+        public int Hour  {get; set; }
 
          public DateTime UpdateHistory{get; set;}
 

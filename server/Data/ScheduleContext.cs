@@ -15,7 +15,8 @@ namespace MyWebApiProject.Data
         public DbSet<HoursBooked> HoursBooked { get; set; }
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<TeacherToSubject> TeacherToSubjects { get; set; }
-
+         public DbSet<ClassSubjectRequirement> ClassSubjectRequirements { get; set; }
+        public DbSet<SchoolSettings> SchoolSettings { get; set; }
 
 
 

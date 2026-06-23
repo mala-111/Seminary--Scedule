@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+client/node_modules/
+logic-server/node_modules/
+
+# builds
+dist/
+build/
+client/dist/
+
+# coverage
+client/coverage/
+
+# env files
+.env
+*.env
+
+# .NET
+bin/
+obj/
+*.user
+*.suo
+
+# OS
+.DS_Store

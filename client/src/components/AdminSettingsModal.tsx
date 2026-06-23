@@ -39,19 +39,19 @@ const AdminSettingsModal = ({ open, onClose }: AdminSettingsModalProps) => {
     }
   }, [open, admins, dispatch]);
 
-  // const handleAddAdmin = () => {
-  //   if (!newUsername.trim() || !newPassword.trim())
-  //     return alert("יש למלא שם וסיסמה");
+  const handleAddAdmin = () => {
+    if (!newUsername.trim() || !newPassword.trim())
+      return alert("יש למלא שם וסיסמה");
 
-  //   const exists = admins.some(
-  //     a => a.username.toLowerCase() === newUsername.toLowerCase()
-  //   );
-  //   if (exists) return alert("מנהל זה כבר קיים");
+    const exists = admins.some(
+      a => a.username.toLowerCase() === newUsername.toLowerCase()
+    );
+    if (exists) return alert("מנהל זה כבר קיים");
 
-  //   dispatch(addAdmin({ username: newUsername, password: newPassword }));
-  //   setNewUsername("");
-  //   setNewPassword("");
-  // };
+    dispatch(addAdmin({ username: newUsername, password: newPassword }));
+    setNewUsername("");
+    setNewPassword("");
+  };
 
   const handleChangePassword = () => {
     if (!changePasswordFor || !newPasswordForChange)

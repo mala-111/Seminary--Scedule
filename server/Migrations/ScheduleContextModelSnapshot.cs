@@ -94,6 +94,30 @@ namespace MyWebApiProject.Migrations
                     b.ToTable("GradesHistory");
                 });
 
+            modelBuilder.Entity("MyWebApiProject.Models.ClassSubjectRequirement", b =>
+                {
+                    b.Property<Guid>("ClassSubjectRequirementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AllClassesID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SubjectID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("WeeklyHoursRequired")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassSubjectRequirementId");
+
+                    b.HasIndex("AllClassesID");
+
+                    b.HasIndex("SubjectID");
+
+                    b.ToTable("ClassSubjectRequirements");
+                });
+
             modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacher", b =>
                 {
                     b.Property<Guid>("ClassDaughtersTeacherID")
@@ -257,13 +281,11 @@ namespace MyWebApiProject.Migrations
                     b.Property<Guid>("AllClassesID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Day")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Hour")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Hour")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("SubjectID")
                         .HasColumnType("uniqueidentifier");
@@ -291,13 +313,11 @@ namespace MyWebApiProject.Migrations
                     b.Property<Guid>("AllClassesID")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Day")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Hour")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Hour")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("ScheduleId")
                         .HasColumnType("uniqueidentifier");
@@ -314,6 +334,35 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("HistoryId");
 
                     b.ToTable("SchedulesHistory");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.SchoolSettings", b =>
+                {
+                    b.Property<Guid>("SchoolSettingsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("EndHour")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxConsecutiveLessons")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinLessonsPerDay")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatrolHoursRatio")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StartHour")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WorkingDaysPerWeek")
+                        .HasColumnType("int");
+
+                    b.HasKey("SchoolSettingsId");
+
+                    b.ToTable("SchoolSettings");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.Subject", b =>
@@ -504,6 +553,25 @@ namespace MyWebApiProject.Migrations
                     b.HasKey("HistoryId");
 
                     b.ToTable("TeacherToSubjectsHistory");
+                });
+
+            modelBuilder.Entity("MyWebApiProject.Models.ClassSubjectRequirement", b =>
+                {
+                    b.HasOne("MyWebApiProject.Models.AllClasses", "AllClasses")
+                        .WithMany()
+                        .HasForeignKey("AllClassesID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyWebApiProject.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AllClasses");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("MyWebApiProject.Models.DaughtersTeacher", b =>

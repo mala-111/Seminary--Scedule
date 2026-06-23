@@ -22,10 +22,10 @@ namespace MyWebApiProject.Models
         //public string Subject  {get;  set;}="";
 
          [Required]
-        public string Day  {get;  set;}="";
+        public int Day  {get;  set;}
         [Required]
 
-        public string Hour  {get; set; }="";
+        public int Hour  {get; set; }
 
         // NAVIGATION
         public Teacher? Teacher { get; set; }
@@ -39,9 +39,9 @@ namespace MyWebApiProject.Models
 
     public class ScheduleDTO
     {
-      public string Day  {get;  set;}
+      public int Day  {get;  set;}
 
-        public string Hour  {get; set; }
+        public int Hour  {get; set; }
         public Guid TeacherID { get; set; }
 public Guid SubjectID { get; set; }
 public Guid AllClassesID { get; set; }
