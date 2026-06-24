@@ -2,7 +2,7 @@ import axios from "axios";
 
 import type { SchoolSettings } from "../redux/types/SchoolSettings";
 
-const BASE_URL = `/api/SchoolSettings`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/SchoolSettings`;
 console.log("BASE_URL", BASE_URL);
 
 // GET settings

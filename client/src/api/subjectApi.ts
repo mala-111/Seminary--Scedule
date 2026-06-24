@@ -4,7 +4,7 @@ import type { Subject } from "../redux/types/subject";
 
 
 const BASE_URL =
-  `/api/Subject`;
+  `${import.meta.env.VITE_API_URL}/api/Subject`;
 
 export const getSubjects = async () => {
   const response = await axios.get(

@@ -3,7 +3,7 @@ import type { Teacher } from "../redux/types/teacher";
 
 
 
-const API_URL = `/api/Teacher`;
+const API_URL = `${import.meta.env.VITE_API_URL}/api/Teacher`;
 
 export const getTeachers = async (): Promise<Teacher[]> => {
   const res = await axios.get(`${API_URL}/showSchedule/employees/all`);

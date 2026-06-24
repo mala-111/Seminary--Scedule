@@ -7,7 +7,7 @@ import type{ TeacherToSubject } from "../redux/types/teacherToSubject";
 
 
 const BASE_URL =
-  `/api/TeacherToSubject`;
+  `${import.meta.env.VITE_API_URL}/api/TeacherToSubject`;
 
 export const getTeacherToSubjects =
   async () => {

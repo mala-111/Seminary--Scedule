@@ -6,7 +6,7 @@ import type{ Schedule } from "../redux/types/schedule";
 
 
 const BASE_URL =
-  `/api/Schedule`;
+  `${import.meta.env.VITE_API_URL}/api/Schedule`;
 
 // GET
 export const getSchedules =

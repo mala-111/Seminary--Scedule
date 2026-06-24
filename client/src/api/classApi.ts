@@ -2,7 +2,7 @@ import axios from "axios";
 import type { Class } from "../redux/types/class";
 
 
-const BASE_URL = `/api/Class`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/Class`;
 
 // GET
 export const getClasses = async () => {

@@ -6,7 +6,7 @@ import type{ HoursBooked } from "../redux/types/hoursBooked";
 
 
 const BASE_URL =
-  `/api/HoursBooked`;
+  `${import.meta.env.VITE_API_URL}/api/HoursBooked`;
 
 export const getHoursBooked = async (
   teacherId: string

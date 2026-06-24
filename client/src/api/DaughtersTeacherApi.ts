@@ -3,7 +3,7 @@ import type { DaughtersTeacher } from "../redux/types/daughtersTeacher";
 
 
 
-const API_URL = `/api/DaughtersTeacher`;
+const API_URL = `${import.meta.env.VITE_API_URL}/api/DaughtersTeacher`;
 
 // GET כל הכיתות של מורה מסוים
 export const getDaughtersTeachers = async (teacherID: string): Promise<DaughtersTeacher[]> => {

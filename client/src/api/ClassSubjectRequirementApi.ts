@@ -2,7 +2,7 @@ import axios from "axios";
 
 import type { ClassSubjectRequirement } from "../redux/types/ClassSubjectRequirement";
 
-const BASE_URL = `/api/ClassSubjectRequirement`;
+const BASE_URL = `${import.meta.env.VITE_API_URL}/api/ClassSubjectRequirement`;
 console.log("BASE_URL", BASE_URL);
 // GET all
 export const getClassSubjectRequirements = async () => {

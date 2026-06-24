@@ -2,7 +2,7 @@ import axios from "axios";
 import type { Employee } from "../redux/types/employee";
 
 const API_URL =
-  `/api/Employee`;
+  `${import.meta.env.VITE_API_URL}/api/Employee`;
 
   console.log("API_URL:", import.meta.env.VITE_API_URL);
 console.log("FULL URL:", `${API_URL}/all`);

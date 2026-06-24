@@ -6,10 +6,9 @@ import type{ AllClasses } from "../redux/types/allClasses";
 
 
 const BASE_URL =
-  `/api/AllClasses`;
+  `${import.meta.env.VITE_API_URL}/api/AllClasses`;
 
-  console.log("VITE:", import.meta.env.VITE_API_URL);
-console.log("BASE:", BASE_URL);
+  
 
 
 export const getAllClasses = async () => {
