@@ -8,7 +8,7 @@ import ScheduleModal from "../components/ScheduleModal";
 import DayOff from "../components/DayOff";
 
 import { useAppDispatch, useAppSelector  } from "../redux/hooks";
-import { createTeacher } from "../redux/slices/teacherSlice";
+import { createTeacher } from "../redux/slices/TeacherSlice";
 import { addHoursBooked } from "../api/hoursBookedApi";
 import { assignTeacherToSubject } from "../api/teacherToSubjectApi";
 import { addDaughtersTeacher } from "../api/DaughtersTeacherApi";
