@@ -2,12 +2,13 @@ import { SchedulerState, TimeSlot } from "../models/SchedulerState";
 import { AllClasses } from "../types/allClasses";
 
 export class SlotSelector {
-  constructor(private state: SchedulerState) {}
+  constructor(private state: SchedulerState) { }
 
   // =========================
   // 🎯 GROUP SLOT (הגרסה החשובה)
   // =========================
   findBestSlotForGroup(classes: AllClasses[]): TimeSlot | null {
+
     const freeSlots = this.state.getFreeSlots();
     if (!freeSlots.length) return null;
 
@@ -27,7 +28,7 @@ export class SlotSelector {
       );
 
       if (!allFree) continue;
-
+      if (this.state.isBlocked(day, hour)) continue;
       if (this.state.isGroupLocked(classIds, day, hour)) {
         continue;
       }
@@ -47,6 +48,7 @@ export class SlotSelector {
   // 🎯 REGULAR SLOT
   // =========================
   findBestSlot(): TimeSlot | null {
+
     const freeSlots = this.state.getFreeSlots();
     if (!freeSlots.length) return null;
 
@@ -54,6 +56,10 @@ export class SlotSelector {
     let bestScore = -Infinity;
 
     for (const slot of freeSlots) {
+      const { day, hour } = slot;
+
+      if (this.state.isSlotTaken(day, hour)) continue;
+
       const score = this.scoreSlot(slot);
 
       if (score > bestScore) {
@@ -86,15 +92,17 @@ export class SlotSelector {
   // 📌 LOAD
   // =========================
   private getDayLoad(day: number): number {
-    return this.state.assignments.filter(a => a.day === day).length;
+    return this.state.assignments.filter(a => a.day === day &&
+    a.subjectId !== "00000000-0000-0000-0000-000000000001").length;
   }
 
   // =========================
   // 📌 DISTRIBUTION
   // =========================
   private getDayDistributionPenalty(day: number): number {
-    const hoursUsed = this.state.assignments.filter(a => a.day === day).length;
-
+const hoursUsed = this.state.assignments.filter(
+  a => a.day === day && a.subjectId !== "00000000-0000-0000-0000-000000000001"
+).length;
     if (hoursUsed >= 5) return 5;
     if (hoursUsed >= 3) return 3;
 

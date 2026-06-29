@@ -1,6 +1,5 @@
 import { SchedulerState } from "../models/SchedulerState";
 import { ConstraintEngine } from "./ConstraintEngine";
-import { Subject } from "../types/Subject";
 import { AllClasses } from "../types/allClasses";
 import { SlotSelector } from "../Placement/SlotSelector";
 import { SchedulerLogger } from "../services/SchedulerLogger";
@@ -53,36 +52,25 @@ export class PlacementEngine {
         const ok = this.constraints.canPlace(
           teacher,
           classItem,
-          this.dummy(),
+          null as any,
           day,
           hour
         );
 
-        if (!ok.ok) {
-          this.logger.rejected("HOMEROOM", ok.reason ?? "blocked");
-          continue;
-        }
+        if (!ok.ok) continue;
 
-        this.state.addAssignment({
+        // 🔥 זה כל מה שצריך
+        this.state.blockSlot(day, hour);
+
+        console.log("🔥 HOMEROOM BLOCKED:", {
           teacherId: teacher.teacherID,
-          classId: classItem.allClassesID!,
-          subjectId: "HOMEROOM",
+          classId: classItem.allClassesID,
           day,
           hour,
         });
-
-        this.state.decreaseTeacherHours(teacher.teacherID);
-
-        this.logger.placed(
-          "HOMEROOM",
-          teacher.teacherID,
-          classItem.allClassesID!,
-          "HOMEROOM"
-        );
       }
     }
   }
-
   // =========================
   // GROUPING
   // =========================
@@ -145,7 +133,6 @@ export class PlacementEngine {
           });
         }
 
-        this.state.decreaseTeacherHours(teacher.teacherID);
 
         this.state.lockGroup(classIds, slot.day, slot.hour);
 
@@ -172,14 +159,18 @@ export class PlacementEngine {
         s => s.subjectID === req.subjectID
       );
 
-      if (!classItem || !subject) continue;
+      if (!classItem || !subject) {
+        console.log("❌ MISSING LOOKUP:", req);
+        continue;
+      }
 
-if (!classItem || !subject) {
-  console.log("MISSING DATA:", req);
-  continue;
-}
 
-console.log("TRY:", subject.subjectID, classItem.allClassesID);
+      // if ((subject.subjectID ?? "").toLowerCase() === PlacementEngine.HOMEROOM_ID.toLowerCase()) {
+      //   console.log("BLOCKED HOMEROOM IN REGULAR");
+      //   continue;
+      // }
+
+      console.log("TRY:", subject.subjectID, classItem.allClassesID);
 
       let remaining = req.weeklyHoursRequired;
       let attempts = 0;
@@ -213,6 +204,7 @@ console.log("TRY:", subject.subjectID, classItem.allClassesID);
         }
 
         this.state.addAssignment({
+
           teacherId: teacher.teacherID,
           classId: classItem.allClassesID!,
           subjectId: subject.subjectID,
@@ -220,7 +212,6 @@ console.log("TRY:", subject.subjectID, classItem.allClassesID);
           hour: slot.hour,
         });
 
-        this.state.decreaseTeacherHours(teacher.teacherID);
 
         remaining--;
       }
@@ -231,28 +222,24 @@ console.log("TRY:", subject.subjectID, classItem.allClassesID);
   // HELPERS
   // =========================
   private groupByLevel(): Record<string, AllClasses[]> {
-  const map: Record<string, AllClasses[]> = {};
+    const map: Record<string, AllClasses[]> = {};
 
-  for (const c of this.state.allClasses) {
-    if (!c || !c.className) continue;
+    for (const c of this.state.allClasses) {
+      if (!c || !c.className) continue;
 
-    const level = String(c.className).charAt(0);
+      const level = String(c.className).charAt(0);
 
-    if (!map[level]) {
-      map[level] = [];
+      if (!map[level]) {
+        map[level] = [];
+      }
+
+      map[level].push(c);
     }
 
-    map[level].push(c);
+    return map;
+
   }
 
-  return map;
-}
 
-  private dummy(): Subject {
-    return {
-      subjectID: "HOMEROOM",
-      name: "Homeroom",
-      category: "Core",
-    };
-  }
+
 }

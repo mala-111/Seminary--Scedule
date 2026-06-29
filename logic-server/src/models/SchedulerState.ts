@@ -30,6 +30,7 @@ export interface SchedulerInput {
   settings: any;
 }
 
+
 export class SchedulerState {
   public teachers: Teacher[] = [];
   public gradeLevels: GradeLevel[] = [];
@@ -43,7 +44,7 @@ export class SchedulerState {
 
   private occupied = new Set<string>();
   private lockedGroups = new Set<string>();
-
+ private blockedSlots = new Set<string>();
   public teacherRemainingHours = new Map<string, number>();
 
   constructor(input: SchedulerInput) {
@@ -79,20 +80,55 @@ export class SchedulerState {
   isSlotFree(day: number, hour: number) {
     return this.grid.some(s => s.day === day && s.hour === hour && s.isFree);
   }
-
+ isSlotTaken(day: number, hour: number): boolean {
+  return this.assignments.some(a => a.day === day && a.hour === hour);
+}
   // =========================
   // ASSIGNMENTS
   // =========================
-
   addAssignment(a: Assignment) {
-    const key = `${a.teacherId}_${a.classId}_${a.day}_${a.hour}`;
+    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
+      console.log("🧠 HOMEROOM DETECTED IN STATE");
+    }
+    console.log("➡️ ADD ASSIGNMENT RECEIVED:", {
+      teacherId: a.teacherId,
+      classId: a.classId,
+      subjectId: a.subjectId,
+      day: a.day,
+      hour: a.hour
+    });
+
+    const key = `${a.teacherId}_${a.classId}_${a.subjectId}_${a.day}_${a.hour}`;
     if (this.occupied.has(key)) return;
-
-    this.assignments.push(a);
+    
+    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
+  this.markSlot(a.day, a.hour, false);
+  return; // 🚫 לא שומרים HOMEROOM כ-assignment
+}
     this.occupied.add(key);
-    this.markSlot(a.day, a.hour, false);
-  }
 
+    // ❗ רק אם זה לא HOMEROOM
+    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
+  this.blockSlot(a.day, a.hour);
+  return;
+}
+
+this.assignments.push(a);
+this.markSlot(a.day, a.hour, false);
+this.decreaseTeacherHours(a.teacherId);
+
+  }
+  blockSlot(day: number, hour: number) {
+  this.blockedSlots.add(`${day}_${hour}`);
+}
+
+isBlocked(day: number, hour: number): boolean {
+  return this.blockedSlots.has(`${day}_${hour}`);
+}
+
+getBlockedSlots() {
+  return Array.from(this.blockedSlots);
+}
   // =========================
   // TEACHER HOURS
   // =========================
@@ -109,6 +145,13 @@ export class SchedulerState {
   // =========================
   // LOOKUPS
   // =========================
+  isDaughtersTeacher(teacherId: string, classId: string): boolean {
+    return (this.input.daughtersTeacher ?? []).some(
+      d =>
+        d.teacherID === teacherId &&
+        d.allClassesID === classId
+    );
+  }
 
   getTeacherById(id: string) {
     return this.teachers.find(t => t.teacherID === id);
@@ -126,37 +169,56 @@ export class SchedulerState {
     return this.subjects.find(s => s.subjectID === id);
   }
   isClassFreeAt(classId: string, day: number, hour: number): boolean {
-  return !this.assignments.some(
-    a =>
-      a.classId === classId &&
-      a.day === day &&
-      a.hour === hour
-  );
-}
-areClassesFree(classes: AllClasses[], day: number, hour: number): boolean {
-  return classes.every(c =>
-    this.isClassFreeAt(c.allClassesID!, day, hour)
-  );
-}
-lockGroup(classIds: string[], day: number, hour: number) {
-  const key = `${day}_${hour}_${classIds.sort().join("|")}`;
-  this.lockedGroups.add(key);
-}
+    return !this.assignments.some(
+      a =>
+        a.classId === classId &&
+        a.day === day &&
+        a.hour === hour
+    );
+  }
+  areClassesFree(classes: AllClasses[], day: number, hour: number): boolean {
+    return classes.every(c =>
+      this.isClassFreeAt(c.allClassesID!, day, hour)
+    );
+  }
+  lockGroup(classIds: string[], day: number, hour: number) {
+    const key = `${day}_${hour}_${classIds.sort().join("|")}`;
+    this.lockedGroups.add(key);
+  }
 
-isGroupLocked(classIds: string[], day: number, hour: number): boolean {
-  const key = `${day}_${hour}_${classIds.sort().join("|")}`;
-  return this.lockedGroups.has(key);
-}
-isClassFree(classId: string, day: number, hour: number): boolean {
-  return !this.assignments.some(
-    a => a.classId === classId && a.day === day && a.hour === hour
-  );
-}
+  isGroupLocked(classIds: string[], day: number, hour: number): boolean {
+    const key = `${day}_${hour}_${classIds.sort().join("|")}`;
+    return this.lockedGroups.has(key);
+  }
+  isClassFree(classId: string, day: number, hour: number): boolean {
+    return !this.assignments.some(
+      a => a.classId === classId && a.day === day && a.hour === hour
+    );
+
+  }
+  getClassRemainingHours(classId: string, subjectId: string) {
+    const req = this.input.classSubjectRequirements.find(
+      r =>
+        r.allClassesID === classId &&
+        r.subjectID === subjectId
+    );
+
+    if (!req) return 0;
+
+    const scheduled = this.assignments.filter(
+      a =>
+        a.classId === classId &&
+        a.subjectId === subjectId
+    ).length;
+
+    return req.weeklyHoursRequired - scheduled;
+  }
+
   // =========================
-// 📤 EXPORT
-// =========================
+  // 📤 EXPORT
+  // =========================
 
-exportSchedule() {
-  return this.assignments;
-}
+  exportSchedule() {
+    return this.assignments;
+  }
 }

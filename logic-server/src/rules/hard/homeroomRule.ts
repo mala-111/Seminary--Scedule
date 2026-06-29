@@ -23,7 +23,7 @@ export function placeHomeroom(state) {
       state.assign(slot, {
         teacherId: teacher.teacherID,
         classId: classItem.allClassesID,
-        subjectId: "HOMEROOM",
+        subjectId:"00000000-0000-0000-0000-000000000001",
         day: DAY,
         hour,
       });

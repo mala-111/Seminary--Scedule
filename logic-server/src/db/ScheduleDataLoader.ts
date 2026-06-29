@@ -24,6 +24,8 @@ export class ScheduleDataLoader {
     const grades = await this.pool.request().query("SELECT * FROM Grades");
     const allClasses = await this.pool.request().query("SELECT * FROM AllClasses");
     const subjects = await this.pool.request().query("SELECT * FROM Subjects");
+    console.log("Subjects from DB:");
+    console.log(subjects.recordset);
 
     const requirements = await this.pool
       .request()
@@ -32,7 +34,8 @@ export class ScheduleDataLoader {
     const teacherToSubject = await this.pool
       .request()
       .query("SELECT * FROM TeacherToSubjects");
-
+    console.log("TeacherToSubjects from DB:");
+    console.log(teacherToSubject.recordset);
     const hoursBooked = await this.pool
       .request()
       .query("SELECT * FROM HoursBooked");
@@ -76,7 +79,7 @@ export class ScheduleDataLoader {
       teacherToSubject: teacherToSubject.recordset.map((t: any) => ({
         teacherID: t.TeacherID,
         subjectID: t.SubjectID,
-        className: t.ClassName,
+        classID: t.ClassID,
       })),
 
       hoursBooked: hoursBooked.recordset,
