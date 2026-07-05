@@ -87,37 +87,24 @@ export class SchedulerState {
   // ASSIGNMENTS
   // =========================
   addAssignment(a: Assignment) {
-    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
-      console.log("🧠 HOMEROOM DETECTED IN STATE");
-    }
-    console.log("➡️ ADD ASSIGNMENT RECEIVED:", {
-      teacherId: a.teacherId,
-      classId: a.classId,
-      subjectId: a.subjectId,
-      day: a.day,
-      hour: a.hour
-    });
+  const HOMEROOM_ID = "00000000-0000-0000-0000-000000000001";
 
-    const key = `${a.teacherId}_${a.classId}_${a.subjectId}_${a.day}_${a.hour}`;
-    if (this.occupied.has(key)) return;
-    
-    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
-  this.markSlot(a.day, a.hour, false);
-  return; // 🚫 לא שומרים HOMEROOM כ-assignment
-}
-    this.occupied.add(key);
+  const key = `${a.teacherId}_${a.classId}_${a.subjectId}_${a.day}_${a.hour}`;
+  if (this.occupied.has(key)) return;
 
-    // ❗ רק אם זה לא HOMEROOM
-    if (a.subjectId === "00000000-0000-0000-0000-000000000001") {
+  this.occupied.add(key);
+
+  if (a.subjectId === HOMEROOM_ID) {
+  this.occupied.add(key);
   this.blockSlot(a.day, a.hour);
+  this.markSlot(a.day, a.hour, false);
   return;
 }
 
-this.assignments.push(a);
-this.markSlot(a.day, a.hour, false);
-this.decreaseTeacherHours(a.teacherId);
-
-  }
+  this.assignments.push(a);
+  this.markSlot(a.day, a.hour, false);
+  this.decreaseTeacherHours(a.teacherId);
+}
   blockSlot(day: number, hour: number) {
   this.blockedSlots.add(`${day}_${hour}`);
 }
@@ -221,4 +208,46 @@ getBlockedSlots() {
   exportSchedule() {
     return this.assignments;
   }
+
+  removeAssignment(a: Assignment) {
+  this.assignments = this.assignments.filter(
+    x =>
+      !(
+        x.teacherId === a.teacherId &&
+        x.classId === a.classId &&
+        x.subjectId === a.subjectId &&
+        x.day === a.day &&
+        x.hour === a.hour
+      )
+  );
+
+  // לפתוח slot מחדש
+  const slot = this.grid.find(
+    s => s.day === a.day && s.hour === a.hour
+  );
+
+  if (slot) slot.isFree = true;
+
+  const current = this.teacherRemainingHours.get(a.teacherId) ?? 0;
+this.teacherRemainingHours.set(a.teacherId, current + 1);
+}
+ isSlotBlocked(day: number, hour: number): boolean {
+  return this.blockedSlots.has(`${day}_${hour}`);
+}
+isTeacherAvailable(teacherId: string, day: number, hour: number): boolean {
+  return !this.input.hoursBooked.some(
+    b =>
+      b.teacherID === teacherId &&
+      Number(b.day) === day &&
+      hour >= b.hourStart &&
+      hour < b.hourEnd
+  );
+}
+getTeacherDayLoad(teacherId: string, day: number): number {
+  return this.assignments.filter(
+    a => a.teacherId === teacherId && a.day === day
+  ).length;
+}
+
+
 }

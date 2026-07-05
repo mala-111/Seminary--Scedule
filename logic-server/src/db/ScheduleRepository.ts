@@ -38,8 +38,8 @@ export class ScheduleRepository {
   .input("day", sql.Int, a.day)
   .input("hour", sql.Int, a.hour)
   .query(`
-    INSERT INTO Schedules (TeacherID, SubjectID, AllClassesID, Day, Hour)
-    VALUES (@teacherId, @subjectId, @classId, @day, @hour)
+    INSERT INTO Schedules (TeacherID, AllClassesID, SubjectID, Day, Hour)
+    VALUES (@teacherId, @classId, @subjectId, @day, @hour)
   `);
       }
 

@@ -82,6 +82,7 @@ export class ScheduleDataLoader {
         classID: t.ClassID,
       })),
 
+
       hoursBooked: hoursBooked.recordset,
       daughtersTeacher: daughtersTeacher.recordset,
 

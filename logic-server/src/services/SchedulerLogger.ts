@@ -1,16 +1,17 @@
 export type LogLevel = "info" | "success" | "warn" | "error";
 
 export interface LogEntry {
-  time: number;
+  time: string;
   step: string;
   level: LogLevel;
   message: string;
-  data?: any;
+  data?: Record<string, any>;
 }
 
 export class SchedulerLogger {
   private logs: LogEntry[] = [];
   private enabled = true;
+  private maxLogs = 5000;
 
   enable() {
     this.enabled = true;
@@ -28,14 +29,11 @@ export class SchedulerLogger {
     return this.logs;
   }
 
-  // =========================
-  // MAIN LOG FUNCTION
-  // =========================
-  log(step: string, message: string, level: LogLevel = "info", data?: any) {
+  log(step: string, message: string, level: LogLevel = "info", data?: Record<string, any>) {
     if (!this.enabled) return;
 
     const entry: LogEntry = {
-      time: Date.now(),
+      time: new Date().toISOString(),
       step,
       level,
       message,
@@ -44,7 +42,10 @@ export class SchedulerLogger {
 
     this.logs.push(entry);
 
-    // הדפסה בזמן אמת לקונסול
+    if (this.logs.length > this.maxLogs) {
+      this.logs.shift();
+    }
+
     const prefix =
       level === "success" ? "🟢" :
       level === "warn" ? "🟡" :
@@ -53,12 +54,8 @@ export class SchedulerLogger {
     console.log(`${prefix} [${step}] ${message}`, data ?? "");
   }
 
-  // =========================
-  // HELPERS נוחים לאלגוריתם
-  // =========================
-
   tryPlace(step: string, teacherId: string, classId: string, day: number, hour: number) {
-    this.log(step, `ניסיון שיבוץ`, "info", {
+    this.log(step, "ניסיון שיבוץ", "info", {
       teacherId,
       classId,
       day,
@@ -67,18 +64,22 @@ export class SchedulerLogger {
   }
 
   placed(step: string, teacherId: string, classId: string, subjectId: string) {
-    this.log(step, `שובץ בהצלחה`, "success", {
+    this.log(step, "שובץ בהצלחה", "success", {
       teacherId,
       classId,
       subjectId,
     });
   }
 
-  rejected(step: string, reason: string, data?: any) {
+  rejected(
+    step: string,
+    reason: string,
+    data?: { teacherId?: string; classId?: string; slot?: { day: number; hour: number } }
+  ) {
     this.log(step, `נדחה: ${reason}`, "warn", data);
   }
 
-  groupBlocked(step: string, classIds: string[]) {
-    this.log(step, "קבוצה נחסמה", "warn", { classIds });
+  groupBlocked(step: string, type: "class" | "teacher" | "slot", ids: string[]) {
+    this.log(step, "קבוצה נחסמה", "warn", { type, ids });
   }
 }

@@ -9,37 +9,11 @@ export interface ConstraintResult {
 }
 
 export class ConstraintEngine {
-  constructor(private state: SchedulerState) { }
+  constructor(private state: SchedulerState) {}
 
   // =========================
-  // 🚀 MAIN CHECK
+  // 🚀 MAIN ENTRY
   // =========================
-  private canTeach(
-    teacher: Teacher,
-    subject: Subject,
-    classItem: AllClasses
-  ): boolean {
-    if (process.env.DEBUG_CONSTRAINTS) {
-
-      console.log("teacherToSubject sample:", this.state.input.teacherToSubject.slice(0, 5));
-      console.log("CAN_TEACH_CHECK", {
-        teacher: teacher.teacherID,
-        subject: subject.subjectID,
-        class: classItem.allClassesID,
-        rows: this.state.input.teacherToSubject.length
-      });
-    }
-    if (subject.subjectID === "00000000-0000-0000-0000-000000000001") {
-  return true;
-}
-    const key = `${teacher.teacherID}_${subject.subjectID}_${classItem.allClassesID}`;
-
-    return this.state.input.teacherToSubject.some(t =>
-      `${t.teacherID}_${t.subjectID}_${t.classID}` === key
-    );
-  }
-
-
   canPlace(
     teacher: Teacher,
     classItem: AllClasses,
@@ -48,62 +22,94 @@ export class ConstraintEngine {
     hour: number
   ): ConstraintResult {
 
-
-    const teacherId = teacher.teacherID;
-    const classId = classItem.allClassesID;
-    const subjectId = subject.subjectID;
-
-    console.log("CHECK:", teacherId, classId, day, hour);
-
-    if (!teacherId || !classId || !subjectId) {
-      return { ok: false, reason: "missing data (undefined ids)" };
-    }
-    if (!this.state.isSlotFree(day, hour)) return { ok: false, reason: "slot taken" };
-
-    if (this.state.isGroupLocked([classId], day, hour)) {
-      return { ok: false, reason: "group conflict" };
+    if (!teacher || !classItem || !subject) {
+      return { ok: false, reason: "missing entity" };
     }
 
-    if (!this.isTeacherFree(teacher, day, hour)) return { ok: false, reason: "teacher busy" };
+    if (this.state.isBlocked(day, hour)) {
+      return { ok: false, reason: "slot blocked" };
+    }
 
-    if (!this.state.isClassFree(classItem.allClassesID!, day, hour)) return { ok: false, reason: "class busy" };
+    // if (!this.state.isSlotFree(day, hour)) {
+    //   return { ok: false, reason: "slot already taken" };
+    // }
 
-    if (!this.canWorkMore(teacher)) return { ok: false, reason: "no hours left" };
+    if (this.state.isSlotTaken(day, hour)) {
+      return { ok: false, reason: "slot taken" };
+    }
 
-    if (!this.canTeach(teacher, subject, classItem)) return { ok: false, reason: "not allowed" };
+    if (!this.isTeacherAvailable(teacher, day, hour)) {
+      return { ok: false, reason: "teacher unavailable" };
+    }
+
+    if (!this.isQualified(teacher, subject)) {
+      return { ok: false, reason: "not qualified" };
+    }
+
+    if (!this.isAllowedClass(teacher, classItem)) {
+      return { ok: false, reason: "teacher not allowed" };
+    }
+
+    if (!this.hasHoursLeft(teacher)) {
+      return { ok: false, reason: "no hours left" };
+    }
+
+    if (this.state.isDaughtersTeacher(teacher.teacherID, classItem.allClassesID)) {
+      return { ok: false, reason: "daughters restriction" };
+    }
 
     return { ok: true };
   }
 
   // =========================
-  // 👩‍🏫 TEACHER AVAILABILITY
+  // 👩‍🏫 HOURS BOOKED
   // =========================
-  private isTeacherFree(teacher: Teacher, day: number, hour: number): boolean {
-    const booked = this.state.input.hoursBooked ?? [];
+  private isTeacherAvailable(teacher: Teacher, day: number, hour: number): boolean {
+    const dayName = this.mapDay(day);
 
-    return !booked.some(b =>
+    return !(this.state.input.hoursBooked ?? []).some(b =>
       b.teacherID === teacher.teacherID &&
-      b.day === day &&
-      hour >= b.hourStart &&
-      hour < b.hourEnd
+      b.Day === dayName &&
+      hour >= this.toHour(b.HourStart) &&
+      hour < this.toHour(b.HourEnd)
     );
+  }
+
+  private toHour(t: any): number {
+    if (typeof t === "number") return t;
+    return Number(String(t).split(":")[0]);
+  }
+
+  private mapDay(day: number): string {
+    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
+    return days[day] ?? "Unknown";
   }
 
   // =========================
   // 📚 QUALIFICATION
   // =========================
+  private isQualified(teacher: Teacher, subject: Subject): boolean {
+    return (this.state.input.teacherToSubject ?? []).some(t =>
+      t.teacherID === teacher.teacherID &&
+      t.subjectID === subject.subjectID
+    );
+  }
+
+  // =========================
+  // 🏫 CLASS RULE
+  // =========================
+  private isAllowedClass(teacher: Teacher, classItem: AllClasses): boolean {
+    return (this.state.input.teacherToSubject ?? []).some(t =>
+      t.teacherID === teacher.teacherID &&
+      t.allClassesID === classItem.allClassesID
+    );
+  }
 
 
   // =========================
-  // 🚫 CLASS RESTRICTION
+  // ⏱ HOURS
   // =========================
-
-
-
-  // =========================
-  // ⏱ HOURS LIMIT
-  // =========================
-  private canWorkMore(teacher: Teacher): boolean {
+  private hasHoursLeft(teacher: Teacher): boolean {
     return this.state.getTeacherRemainingHours(teacher.teacherID) > 0;
   }
 }

@@ -1,36 +1,16 @@
-export function placeHomeroom(state) {
-  const DAY = 0; // יום ראשון
+export function canPlaceHomeroom(state, teacher, classItem, slot) {
+  if (slot.day !== 0) return false;
 
-  for (const classItem of state.allClasses) {
-    if (!classItem?.allClassesID || !classItem?.className) continue;
+  if (!state.isSlotFree(slot.day, slot.hour)) return false;
+  if (state.isBlocked(slot.day, slot.hour)) return false;
 
-    const teacher = state.teachers.find(t =>
-      (t.className || "").trim() === (classItem.className || "").trim()
-    );
+  const isTeacherAvailable = state.isTeacherAvailable(
+    teacher.teacherID,
+    slot.day,
+    slot.hour
+  );
 
-    if (!teacher) continue;
+  if (!isTeacherAvailable) return false;
 
-    for (let hour = 0; hour < 2; hour++) {
-      const slot = state.getSlot(DAY, hour);
-
-      // ❗ בדיקות חובה
-      if (!slot || !slot.isFree) continue;
-
-      if (state.isTeacherBusy?.(teacher.teacherID, DAY, hour)) continue;
-
-      if (state.isClassBusy?.(classItem.allClassesID, DAY, hour)) continue;
-
-      state.assign(slot, {
-        teacherId: teacher.teacherID,
-        classId: classItem.allClassesID,
-        subjectId:"00000000-0000-0000-0000-000000000001",
-        day: DAY,
-        hour,
-      });
-
-      if (teacher.weeklyHours > 0) {
-        teacher.weeklyHours--;
-      }
-    }
-  }
+  return true;
 }

@@ -1,21 +1,13 @@
-export function placeGrouping(state) {
-  const subjects = state.getGroupingSubjects();
+export function canPlaceGrouping(state, subject, classes, slot) {
+  const classIds = classes.map(c => c.allClassesID);
 
-for (const subject of subjects) {
-  const classes = state.getClassesByLevel(subject.level);
+  const allFree = classes.every(c =>
+    state.isClassFreeAt(c.allClassesID, slot.day, slot.hour)
+  );
 
-  const slot = state.findCommonFreeSlot(classes);
+  if (!allFree) return false;
+  if (state.isBlocked(slot.day, slot.hour)) return false;
+  if (state.isGroupLocked(classIds, slot.day, slot.hour)) return false;
 
-  for (const c of classes) {
-    const teacher = state.findTeacherFor(subject, c);
-
-    state.assign(slot, {
-      teacher,
-      class: c,
-      subject,
-    });
-
-    teacher.remainingHours--;
-  }
-}
+  return true;
 }

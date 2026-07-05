@@ -1,12 +1,14 @@
 import { SchedulerState } from "../models/SchedulerState";
 import { ConstraintEngine } from "./ConstraintEngine";
-import { AllClasses } from "../types/allClasses";
 import { SlotSelector } from "../Placement/SlotSelector";
 import { SchedulerLogger } from "../services/SchedulerLogger";
+import { LessonDemand } from "../types/LessonDemand";
+import { SlotScoringEngine } from "../engine/SlotScoringEngine";
 
 export class PlacementEngine {
   private slotSelector: SlotSelector;
   private constraints: ConstraintEngine;
+  private scoring: SlotScoringEngine;
 
   constructor(
     private state: SchedulerState,
@@ -14,232 +16,130 @@ export class PlacementEngine {
   ) {
     this.slotSelector = new SlotSelector(state);
     this.constraints = new ConstraintEngine(state);
+    this.scoring = new SlotScoringEngine(state);
   }
 
-  // =========================
-  // 🚀 ENTRY
-  // =========================
-  run() {
+  run(demands: LessonDemand[]) {
     console.log("START PLACEMENT");
-    console.log("teachers:", this.state.teachers.length);
-    console.log("subjects:", this.state.subjects.length);
-    console.log("requirements:", this.state.input.classSubjectRequirements.length);
-    console.log("free slots:", this.state.getFreeSlots().length);
+    console.log("demands:", demands.length);
 
-    this.placeHomeroom();
-    this.placeGrouping();
-    this.placeRegular();
-  }
+    demands.sort((a, b) => b.priority - a.priority);
 
-  // =========================
-  // HOMEROOM
-  // =========================
-  private placeHomeroom() {
-    const teachers = this.state.teachers.filter(t => t.isClassTeacher);
-
-    for (const teacher of teachers) {
-      const classItem = this.state.allClasses.find(
-        c => c.className === teacher.className
-      );
-
-      if (!classItem) continue;
-
-      for (let hour = 0; hour < 2; hour++) {
-        const day = 0;
-
-        if (!this.state.isSlotFree(day, hour)) continue;
-
-        const ok = this.constraints.canPlace(
-          teacher,
-          classItem,
-          null as any,
-          day,
-          hour
-        );
-
-        if (!ok.ok) continue;
-
-        // 🔥 זה כל מה שצריך
-        this.state.blockSlot(day, hour);
-
-        console.log("🔥 HOMEROOM BLOCKED:", {
-          teacherId: teacher.teacherID,
-          classId: classItem.allClassesID,
-          day,
-          hour,
-        });
-      }
+    for (const demand of demands) {
+      this.tryPlace(demand);
     }
   }
-  // =========================
-  // GROUPING
-  // =========================
-  private placeGrouping() {
-    const subjects = this.state.subjects.filter(s => s.category === "Grouping");
-    const grouped = this.groupByLevel();
 
-    for (const subject of subjects) {
-      for (const level in grouped) {
-        const classes = grouped[level];
+  private tryPlace(demand: LessonDemand) {
+    console.log(
+      "TRY PLACE:",
+      demand.classId,
+      demand.subjectId,
+      "teachers:",
+      demand.teacherCandidates.length
+    );
+    let remaining = demand.remainingHours;
+    let attempts = 0;
 
-        const slot = this.slotSelector.findBestSlot();
-        if (!slot) continue;
+    const classItem = this.state.getClassById(demand.classId);
+    const subject = this.state.getSubjectById(demand.subjectId);
 
-        const classIds = classes.map(c => c.allClassesID!);
+    if (!classItem || !subject) return;
 
-        if (this.state.isGroupLocked(classIds, slot.day, slot.hour)) {
-          continue;
-        }
+    while (remaining > 0 && attempts < 300) {
+      attempts++;
 
-        const teacher = this.state.teachers.find(t =>
-          this.state.input.teacherToSubject.some(x =>
-            x.teacherID === t.teacherID &&
-            x.subjectID === subject.subjectID &&
-            x.className.startsWith(level)
-          )
-        );
+      const slot = this.slotSelector.findBestSlot();
+      if (!slot) {
+        console.log("NO SLOT FOUND");
+        continue;
+      }
+      const teachers = this.state.teachers.filter(t =>
+        demand.teacherCandidates.includes(t.teacherID)
+      );
+      console.log(
+        "Valid teachers:",
+        "/",
+        teachers.length
+      );
 
-        if (!teacher) continue;
+      if (!teachers.length) continue;
 
-        const allFree = classes.every(c =>
-          this.state.isClassFree(c.allClassesID!, slot.day, slot.hour)
-        );
+      // 1. קודם סינון לפי Constraints
+      const validTeachers = [];
 
-        if (!allFree) {
-          this.logger.rejected("GROUPING", "class occupied");
-          continue;
-        }
-
-        const ok = this.constraints.canPlace(
-          teacher,
-          classes[0],
+      for (const t of teachers) {
+        const result = this.constraints.canPlace(
+          t,
+          classItem,
           subject,
           slot.day,
           slot.hour
         );
 
-        if (!ok.ok) {
-          this.logger.rejected("GROUPING", ok.reason ?? "blocked");
-          continue;
-        }
-
-        for (const c of classes) {
-          this.state.addAssignment({
-            teacherId: teacher.teacherID,
-            classId: c.allClassesID!,
-            subjectId: subject.subjectID,
-            day: slot.day,
-            hour: slot.hour,
-          });
-        }
-
-
-        this.state.lockGroup(classIds, slot.day, slot.hour);
-
-        this.logger.placed(
-          "GROUPING",
-          teacher.teacherID,
-          classIds[0],
-          subject.subjectID
+        console.log(
+          "Teacher",
+          t.teacherID,
+          "=>",
+          result.ok,
+          result.reason
         );
+
+        if (result.ok) {
+          validTeachers.push(t);
+        }
       }
-    }
-  }
 
-  // =========================
-  // REGULAR
-  // =========================
-  private placeRegular() {
-    for (const req of this.state.input.classSubjectRequirements) {
-      const classItem = this.state.allClasses.find(
-        c => c.allClassesID === req.allClassesID
+      console.log("Valid teachers:", validTeachers.length, "/", teachers.length);
+
+      if (!validTeachers.length) continue;
+      console.log(
+        "PLACE:",
+        demand.classId,
+        demand.subjectId,
+        slot.day,
+        slot.hour
+      );
+      // 2. בחירת המורה עם Score הכי גבוה
+      const best = validTeachers
+        .map(t => ({
+          teacher: t,
+          score: this.scoring.evaluate({
+            slot,
+            teacherId: t.teacherID,
+            classId: demand.classId
+          })
+        }))
+        .sort((a, b) => b.score - a.score)[0];
+
+      if (!best) continue;
+
+      const teacher = best.teacher;
+
+      const ok = this.constraints.canPlace(
+        teacher,
+        classItem,
+        subject,
+        slot.day,
+        slot.hour
       );
 
-      const subject = this.state.subjects.find(
-        s => s.subjectID === req.subjectID
-      );
-
-      if (!classItem || !subject) {
-        console.log("❌ MISSING LOOKUP:", req);
+      if (!ok.ok) {
+        this.logger.rejected("DEMAND", ok.reason ?? "blocked");
         continue;
       }
 
+      this.state.addAssignment({
+        teacherId: teacher.teacherID,
+        classId: demand.classId,
+        subjectId: demand.subjectId,
+        day: slot.day,
+        hour: slot.hour,
+      });
 
-      // if ((subject.subjectID ?? "").toLowerCase() === PlacementEngine.HOMEROOM_ID.toLowerCase()) {
-      //   console.log("BLOCKED HOMEROOM IN REGULAR");
-      //   continue;
-      // }
+      this.state.decreaseTeacherHours(teacher.teacherID);
 
-      console.log("TRY:", subject.subjectID, classItem.allClassesID);
-
-      let remaining = req.weeklyHoursRequired;
-      let attempts = 0;
-
-      while (remaining > 0 && attempts < 300) {
-        attempts++;
-
-        const slot = this.slotSelector.findBestSlot();
-        if (!slot) continue;
-
-        const teacher = this.state.teachers.find(t =>
-          this.state.input.teacherToSubject.some(x =>
-            x.teacherID === t.teacherID &&
-            x.subjectID === subject.subjectID
-          )
-        );
-
-        if (!teacher) break;
-
-        const ok = this.constraints.canPlace(
-          teacher,
-          classItem,
-          subject,
-          slot.day,
-          slot.hour
-        );
-
-        if (!ok.ok) {
-          this.logger.rejected("REGULAR", ok.reason ?? "blocked");
-          continue;
-        }
-
-        this.state.addAssignment({
-
-          teacherId: teacher.teacherID,
-          classId: classItem.allClassesID!,
-          subjectId: subject.subjectID,
-          day: slot.day,
-          hour: slot.hour,
-        });
-
-
-        remaining--;
-      }
+      remaining--;
     }
   }
-
-  // =========================
-  // HELPERS
-  // =========================
-  private groupByLevel(): Record<string, AllClasses[]> {
-    const map: Record<string, AllClasses[]> = {};
-
-    for (const c of this.state.allClasses) {
-      if (!c || !c.className) continue;
-
-      const level = String(c.className).charAt(0);
-
-      if (!map[level]) {
-        map[level] = [];
-      }
-
-      map[level].push(c);
-    }
-
-    return map;
-
-  }
-
-
-
 }

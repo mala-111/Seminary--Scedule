@@ -6,6 +6,7 @@ import "./Form.css";
 import ProfessionModal from "../components/ProfessionModal";
 import ScheduleModal from "../components/ScheduleModal";
 import DayOff from "../components/DayOff";
+import EndSchedule from "../components/EndSchedule";
 
 import { useAppDispatch, useAppSelector  } from "../redux/hooks";
 import { createTeacher } from "../redux/slices/teacherSlice";
@@ -13,6 +14,7 @@ import { addHoursBooked } from "../api/hoursBookedApi";
 import { assignTeacherToSubject } from "../api/teacherToSubjectApi";
 import { addDaughtersTeacher } from "../api/DaughtersTeacherApi";
 import { fetchAllClasses } from "../redux/slices/AllClassesSlice";
+
 
 
 // ----------------------------
@@ -83,6 +85,7 @@ const password = state?.password || "";
     professions: {},
   });
 
+
   // ----------------------------
   // NEW STATE
   // ----------------------------
@@ -100,6 +103,9 @@ const password = state?.password || "";
   const [dayOffOpen, setDayOffOpen] = useState(false);
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
+  
+  const [endScheduleOpen, setEndScheduleOpen] = useState(false);
+  
   const [selectedClassId, setSelectedClassId] = useState<string>("");
 
   const [dayOffPriorities, setDayOffPriorities] = useState<string[]>([]);
@@ -567,7 +573,19 @@ const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 
         {/* ACTION BUTTONS */}
 
+        
+
         <div className="action-buttons">
+
+
+          <div className="button-with-text">
+  <motion.button
+    whileHover={{ scale: 1.06 }}
+    onClick={() => setEndScheduleOpen(true)}
+  >
+    מערכת
+  </motion.button>
+</div>
 {/* מקצועות */}
 
 <div className="button-with-text">
@@ -761,6 +779,10 @@ const handleClassKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
           dayOffPriorities
         }
       />
+      <EndSchedule
+  open={endScheduleOpen}
+  onClose={() => setEndScheduleOpen(false)}
+/>
     </div>
   );
 };

@@ -1,0 +1,82 @@
+.schedule-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.schedule-modal {
+  width: 95%;
+  max-width: 1400px;
+  height: 90vh;
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  overflow: auto;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+}
+
+.schedule-modal h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.table-wrapper {
+  overflow: auto;
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid #cfcfcf;
+  text-align: center;
+  padding: 12px;
+  min-width: 180px;
+  height: 70px;
+  vertical-align: top;
+}
+
+.schedule-table th {
+  background: #1976d2;
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+.schedule-table td:first-child,
+.schedule-table th:first-child {
+  width: 90px;
+  min-width: 90px;
+  background: #f4f4f4;
+  font-weight: bold;
+}
+
+.schedule-table tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #ef4444;
+  color: white;
+  font-size: 18px;
+}
+
+.close-btn:hover {
+  background: #dc2626;
+}
